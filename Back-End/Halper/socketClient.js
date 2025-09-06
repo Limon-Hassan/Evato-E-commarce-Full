@@ -1,6 +1,6 @@
 const { io } = require('socket.io-client');
 
-const socket = io('http://your-socket-server-url:5000', {
+const socket = io('https://evato-e-commarce-full-production.up.railway.app', {
   reconnection: true,
 });
 
