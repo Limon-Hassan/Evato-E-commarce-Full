@@ -11,10 +11,11 @@ const {
 } = require('../../AllController/AuthController');
 const authMidleware = require('../../Midleware/authMidleware');
 const AdminMidleware = require('../../Midleware/AdminMidleware');
+const { ErrorCheck } = require('../../Halper/ErrorCheck');
 
 router.post('/registation', registation);
 router.post('/Adminregistation', Adminregistation);
-router.post('/login', authMidleware, AdminMidleware, login);
+router.post('/login', ErrorCheck, login);
 router.post('/otp-verify', otpVerify);
 router.post('/resent-otp', resntOTP);
 router.get('/users', authMidleware, alluser);
