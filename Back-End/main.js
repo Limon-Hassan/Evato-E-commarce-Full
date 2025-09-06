@@ -1,5 +1,5 @@
 let express = require('express');
-require('dotenv').config({ path: '../config_env/backend.env' });
+require('dotenv').config();
 var cookieParser = require('cookie-parser');
 const router = require('./Router/main');
 const dbConnection = require('./Config/dbconfig');
@@ -19,5 +19,8 @@ dbConnection();
 app.get('/', (req, res) => {
   res.send('Hello World !');
 });
+const PORT = process.env.PORT || 44044;
 
-module.exports = app;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
