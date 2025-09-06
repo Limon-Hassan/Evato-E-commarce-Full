@@ -9,6 +9,8 @@ const {
   DeleteCategory,
 } = require('../../AllController/categoryController');
 const { ErrorCheck } = require('../../Halper/ErrorCheck');
+const AdminMidleware = require('../../Midleware/AdminMidleware');
+const authMidleware = require('../../Midleware/authMidleware');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads');
@@ -41,14 +43,27 @@ router.post(
   '/createCategory',
   upload.array('image', 12),
   ErrorCheck,
+  AdminMidleware,
   addCategory
 );
-router.get('/getCategory', ErrorCheck, ReadCategory);
+router.get(
+  '/getCategory',
+  ErrorCheck,
+  authMidleware,
+  AdminMidleware,
+  ReadCategory
+);
 router.patch(
   '/UpdateCategory/:id',
   upload.array('image', 12),
   ErrorCheck,
+  AdminMidleware,
   UpdateCategory
 );
-router.delete('/DeleteCategory/:id', ErrorCheck, DeleteCategory);
+router.delete(
+  '/DeleteCategory/:id',
+  ErrorCheck,
+  AdminMidleware,
+  DeleteCategory
+);
 module.exports = router;

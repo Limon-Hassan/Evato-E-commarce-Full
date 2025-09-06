@@ -7,12 +7,13 @@ const {
   DeleteCart,
 } = require('../../AllController/CartController');
 const { ErrorCheck } = require('../../Halper/ErrorCheck');
+const authMidleware = require('../../Midleware/authMidleware');
 let router = express.Router();
 
-router.post('/createCart', ErrorCheck, CreateCart);
-router.get('/readCart/:id', ErrorCheck, readcart);
-router.get('/CartSummery/:id', ErrorCheck, CartSummery);
-router.put('/Increament/:id', ErrorCheck, IncreamentCart);
-router.delete('/DeleteCart/:id', ErrorCheck, DeleteCart);
+router.post('/createCart', ErrorCheck, authMidleware, CreateCart);
+router.get('/readCart/:id', ErrorCheck, authMidleware, readcart);
+router.get('/CartSummery/:id', ErrorCheck, authMidleware, CartSummery);
+router.put('/Increament/:id', ErrorCheck, authMidleware, IncreamentCart);
+router.delete('/DeleteCart/:id', ErrorCheck, authMidleware, DeleteCart);
 
 module.exports = router;

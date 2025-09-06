@@ -13,6 +13,8 @@ const {
   makeReviews,
   getReviews,
 } = require('../../AllController/reviewController');
+const AdminMidleware = require('../../Midleware/AdminMidleware');
+const authMidleware = require('../../Midleware/authMidleware');
 let router = express.Router();
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -47,17 +49,25 @@ router.post(
   '/Createproduct',
   productPhoto.array('photo', 12),
   ErrorCheck,
+  AdminMidleware,
   Createproducts
 );
-router.post('/CreateReviews', ErrorCheck, makeReviews);
-router.get('/getReviews', ErrorCheck, getReviews);
-router.get('/product/search', ErrorCheck, searchProducts);
-router.get('/GetProducts', ErrorCheck, readProduct);
+router.post('/CreateReviews', ErrorCheck, authMidleware, makeReviews);
+router.get('/getReviews', ErrorCheck, authMidleware, getReviews);
+router.get('/product/search', ErrorCheck, authMidleware, searchProducts);
+router.get(
+  '/GetProducts',
+  ErrorCheck,
+  authMidleware,
+  AdminMidleware,
+  readProduct
+);
 router.patch(
   '/updateProduct/:id',
   productPhoto.array('photo', 12),
   ErrorCheck,
+  AdminMidleware,
   updateProducts
 );
-router.delete('/Deleteproduct/:id', ErrorCheck, DeleteProduct);
+router.delete('/Deleteproduct/:id', ErrorCheck, AdminMidleware, DeleteProduct);
 module.exports = router;

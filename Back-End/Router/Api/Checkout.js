@@ -11,9 +11,9 @@ const authMidleware = require('../../Midleware/authMidleware');
 const AdminMidleware = require('../../Midleware/AdminMidleware');
 let router = express.Router();
 
-router.post('/MakeCheckout/:id', ErrorCheck, checkout);
-router.get('/getCheckout/:id', ErrorCheck, ReadCheckout);
-router.get('/adminCheckout/:id', ErrorCheck, AdminReadCheckout);
+router.post('/MakeCheckout/:id', ErrorCheck, authMidleware, checkout);
+router.get('/getCheckout/:id', ErrorCheck, authMidleware, ReadCheckout);
+router.get('/adminCheckout/:id', ErrorCheck, AdminMidleware, AdminReadCheckout);
 router.patch('/updateCheckout/:id', ErrorCheck, authMidleware, updateCheckout);
 router.patch('/AdminDecision/:id', ErrorCheck, AdminMidleware, AdminDecision);
 

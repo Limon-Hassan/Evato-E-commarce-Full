@@ -14,7 +14,7 @@ const AdminMidleware = require('../../Midleware/AdminMidleware');
 
 router.post('/registation', registation);
 router.post('/Adminregistation', Adminregistation);
-router.post('/login', login);
+router.post('/login', authMidleware, AdminMidleware, login);
 router.post('/otp-verify', otpVerify);
 router.post('/resent-otp', resntOTP);
 router.get('/users', authMidleware, alluser);
