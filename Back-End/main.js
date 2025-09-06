@@ -19,8 +19,8 @@ dbConnection();
 app.get('/', (req, res) => {
   res.send('Hello World !');
 });
-const PORT = process.env.PORT || 44044;
 
+const PORT = process.env.PORT || 44044;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
