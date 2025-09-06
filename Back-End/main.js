@@ -1,5 +1,5 @@
 let express = require('express');
-require('dotenv').config();
+require('dotenv').config({ path: '../config_env/backend.env' });
 var cookieParser = require('cookie-parser');
 const router = require('./Router/main');
 const dbConnection = require('./Config/dbconfig');
