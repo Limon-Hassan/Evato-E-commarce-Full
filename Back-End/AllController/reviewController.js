@@ -1,6 +1,6 @@
 const productScema = require('../Model/productScema');
 const ReviewsSchema = require('../Model/ReviewsSchema');
-let { getIO } = require('../socket');
+let socket = require('../Halper/socketClient');
 
 async function makeReviews(req, res, next) {
   let { productId, rating, comment } = req.body;
@@ -16,7 +16,7 @@ async function makeReviews(req, res, next) {
       $push: { reviews: reviews._id },
     });
 
-    getIO().emit('reviewCreated', {
+    socket.emit('reviewCreated', {
       productId,
       review: await reviews.populate('user', 'name'),
     });
@@ -42,6 +42,5 @@ async function getReviews(req, res, next) {
     next(error);
   }
 }
-
 
 module.exports = { makeReviews, getReviews };

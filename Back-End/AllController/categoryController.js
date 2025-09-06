@@ -1,7 +1,7 @@
 const categorySchema = require('../Model/categorySchema');
 const path = require('path');
 const fs = require('fs');
-let { getIO } = require('../socket');
+let socket = require('../Halper/socketClient');
 
 async function addCategory(req, res, next) {
   let { name, discription } = req.body;
@@ -21,7 +21,7 @@ async function addCategory(req, res, next) {
       image: fileNames,
     });
     await category.save();
-    getIO().emit('categoryCreated', category);
+    socket.emit('categoryCreated', category);
     return res
       .status(200)
       .send({ msg: 'category added successfully !', data: category });
@@ -66,7 +66,7 @@ async function UpdateCategory(req, res, next) {
       { name: changeName, discription: changeDiscription, image: Filenames },
       { new: true }
     );
-    getIO().emit('categoryUpdated', updateCategory);
+    socket.emit('categoryUpdated', updateCategory);
     return res.send({
       msg: 'Update Category successfully !',
       data: updateCategory,
@@ -103,7 +103,7 @@ async function DeleteCategory(req, res, next) {
       });
     });
     await Promise.all(deletePromise);
-    getIO().emit('categoryDeleted', id);
+    socket.emit('categoryDeleted', id);
     return res.send({ msg: 'category delete successfully !', id });
   } catch (error) {
     next(error);

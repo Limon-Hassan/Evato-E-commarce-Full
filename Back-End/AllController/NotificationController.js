@@ -1,5 +1,5 @@
 const Notification = require('../Model/notifiactionSchema');
-const { getIO } = require('../socket');
+const socket = require('../Halper/socketClient');
 
 async function createNotify(req, res, next) {
   try {
@@ -12,7 +12,7 @@ async function createNotify(req, res, next) {
     let newNotify = new Notification({ user, message, type });
     await newNotify.save();
 
-    getIO().to(user.toString()).emit('notification', {
+    socket.to(user.toString()).emit('notification', {
       _id: newNotify._id,
       message: newNotify.message,
       type: newNotify.type,

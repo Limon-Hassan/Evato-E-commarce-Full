@@ -1,6 +1,6 @@
 const productScema = require('../Model/productScema');
 const SearchHistory = require('../Model/searchSchema');
-const { getIO } = require('../socket');
+const socket = require('../Halper/socketClient');
 
 async function searchProducts(req, res, next) {
   try {
@@ -69,12 +69,10 @@ async function searchProducts(req, res, next) {
     if (userId && query) await SearchHistory.create({ user: userId, query });
 
     if (query && userId) {
-      getIO()
-        .to(userId.toString())
-        .emit('searchSuggestion', {
-          query,
-          suggestions: products.map(p => p.name).slice(0, 5),
-        });
+      socket.to(userId.toString()).emit('searchSuggestion', {
+        query,
+        suggestions: products.map(p => p.name).slice(0, 5),
+      });
     }
 
     return res.status(200).json({

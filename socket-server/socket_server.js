@@ -4,7 +4,9 @@ const express = require('express');
 
 const app = express();
 const server = http.createServer(app);
-
+app.get('/', (req, res) => {
+  res.send('Socket server is ready!');
+});
 const io = new Server(server, {
   cors: {
     origin: '*',

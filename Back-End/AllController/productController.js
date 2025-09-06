@@ -2,7 +2,7 @@ const categorySchema = require('../Model/categorySchema');
 const productScema = require('../Model/productScema');
 let path = require('path');
 let fs = require('fs');
-let { getIO } = require('../socket');
+let socket = require('../Halper/socketClient');
 
 async function Createproducts(req, res, next) {
   let { name, discription, price, category, stock } = req.body;
@@ -30,7 +30,7 @@ async function Createproducts(req, res, next) {
         { $push: { Product: product._id } }
       );
     }
-    getIO().emit('productCreated', product);
+    socket.emit('productCreated', product);
     return res
       .status(200)
       .send({ msg: 'Product added successfully !', data: product });
@@ -67,7 +67,7 @@ async function topProducts(req, res, next) {
         select: 'name discription image',
       });
 
-    getIO().emit('topProductsUpdate', topProducts);
+    socket.emit('topProductsUpdate', topProducts);
 
     res.status(200).json({
       success: true,
@@ -111,7 +111,7 @@ async function updateProducts(req, res, next) {
       { new: true }
     );
 
-    getIO().emit('productupdated', updateProduct);
+    socket.emit('productupdated', updateProduct);
     return res.send({
       msg: 'Product update Successfully !',
       data: updateProduct,
@@ -149,7 +149,7 @@ async function DeleteProduct(req, res, next) {
       });
     });
     await Promise.all(Deletepromise);
-    getIO().emit('productDeleted', id);
+    socket.emit('productDeleted', id);
     return res.send({ msg: 'Product delete successfully !', id });
   } catch (error) {
     next(error);

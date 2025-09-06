@@ -1,7 +1,7 @@
 const sendEmailer = require('../Halper/sendEmail');
 const CartSchema = require('../Model/CartSchema');
 const CheckoutSchema = require('../Model/CheckoutSchema');
-const { getIO } = require('../socket');
+const socket = require('../Halper/socketClient');
 
 async function checkout(req, res, next) {
   let { id } = req.params;
@@ -65,7 +65,7 @@ async function checkout(req, res, next) {
       delivery,
     });
     await newOder.save();
-    getIO().to(id).emit('orderPlaced', {
+    socket.to(id).emit('orderPlaced', {
       msg: 'Order placed successfully!',
       orderID: uniqueOrderId,
       order: newOder,
@@ -111,8 +111,6 @@ async function ReadCheckout(req, res, next) {
 }
 
 async function AdminReadCheckout(req, res, next) {
-  let { id } = req.params;
-
   try {
     let allCheckout = await CheckoutSchema.find({});
     if (!allCheckout) {
@@ -151,13 +149,11 @@ async function updateCheckout(req, res, next) {
       return res.status(400).send({ msg: 'invaild action for this user !' });
     }
     await userRoll.save();
-    getIO()
-      .to(userRoll.user._id.toString())
-      .emit('orderStatus', {
-        orderId: userRoll._id,
-        deliveryStatus: userRoll.delivery,
-        msg: `Your order status changed to ${userRoll.delivery}`,
-      });
+    socket.to(userRoll.user._id.toString()).emit('orderStatus', {
+      orderId: userRoll._id,
+      deliveryStatus: userRoll.delivery,
+      msg: `Your order status changed to ${userRoll.delivery}`,
+    });
 
     return res.json({ msg: 'Order status updated', userRoll });
   } catch (error) {
@@ -207,13 +203,11 @@ async function AdminDecision(req, res, next) {
     }
 
     await adminWork.save();
-    getIO()
-      .to(adminWork.user._id.toString())
-      .emit('orderStatusUpdate', {
-        orderId: adminWork._id,
-        orderStatus: adminWork.delivery,
-        msg: `Your order status changed to ${order.delivery}`,
-      });
+    socket.to(adminWork.user._id.toString()).emit('orderStatusUpdate', {
+      orderId: adminWork._id,
+      orderStatus: adminWork.delivery,
+      msg: `Your order status changed to ${order.delivery}`,
+    });
     return res
       .status(200)
       .send({ msg: 'order status updated !', data: adminWork });
