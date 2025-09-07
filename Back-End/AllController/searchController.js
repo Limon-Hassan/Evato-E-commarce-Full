@@ -4,9 +4,18 @@ const socket = require('../Halper/socketClient');
 
 async function searchProducts(req, res, next) {
   try {
-    let { query, minPrice, maxPrice, sort, userId } = req.query;
+    let {
+      query,
+      minPrice,
+      maxPrice,
+      sort,
+      userId,
+      page = 1,
+      limit = 12,
+    } = req.query;
     query = query?.trim();
-
+    page = Number(page);
+    limit = Number(limit);
     let filter = {};
 
     const orArray = [];
@@ -33,9 +42,13 @@ async function searchProducts(req, res, next) {
     if (sort === 'lowToHigh') sortOption.price = 1;
     if (sort === 'highToLow') sortOption.price = -1;
 
+    const totalProducts = await productScema.countDocuments(filter);
+
     let products = await productScema
       .find(filter)
       .sort(sortOption)
+      .skip((page - 1) * limit)
+      .limit(limit)
       .populate({ path: 'category', select: 'name discription image' });
 
     let related = [];
@@ -79,6 +92,8 @@ async function searchProducts(req, res, next) {
       msg: 'Search results',
       count: products.length,
       products,
+      totalPages: Math.ceil(totalProducts / limit),
+      currentPage: page,
       related,
     });
   } catch (error) {
