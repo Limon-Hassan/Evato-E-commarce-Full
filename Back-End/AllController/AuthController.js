@@ -200,7 +200,7 @@ async function resntOTP(req, res) {
       { new: true }
     );
   }, 60000);
-  sendEmailer(email, Otp);
+  sendEmailer(email, 'otp', { name: Again_mail.name, otp: Otp });
   return res.send({ msg: 'otp resent successfull' });
 }
 
