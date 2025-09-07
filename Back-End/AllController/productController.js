@@ -13,7 +13,7 @@ async function Createproducts(req, res, next) {
     let photo = req.files;
     let Photos = [];
     photo.forEach(element => {
-      Photos.push(process.env.Host_Name + '/' + element.filename);
+      Photos.push(process.env.Host_Name + '/productPhoto/' + element.filename);
     });
     let product = new productScema({
       name,
@@ -90,12 +90,16 @@ async function updateProducts(req, res, next) {
   try {
     let photo = req.files;
     let Photos = [];
-    if (Array.isArray(photo)) {
-      photo.forEach(element => {
-        Photos.push(process.env.Host_Name + '/' + element.path);
-      });
-    } else {
-      Photos.push(process.env.Host_Name + photo.photo);
+    const host = (process.env.Host_Name || '').replace(/\/$/, '');
+
+    if (files) {
+      if (Array.isArray(photo)) {
+        files.forEach(f => {
+          photo.push(`${host}/productPhoto/${f.filename}`);
+        });
+      } else {
+        photo.push(`${host}/productPhoto/${files.filename}`);
+      }
     }
 
     let updateProduct = await productScema.findByIdAndUpdate(

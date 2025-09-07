@@ -11,8 +11,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-app.use(express.static('uploads'));
-app.use(express.static('productPhoto'));
+app.use("/uploads",express.static('uploads'));
+app.use("/product",express.static('productPhoto'));
 app.use(router);
 app.use(ErrorCheck);
 dbConnection();
