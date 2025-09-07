@@ -35,11 +35,11 @@ async function registation(req, res, next) {
           { new: true }
         );
       }, 60000);
-      // sendEmailer(email, 'otp', { name: name, otp: Otp });
+      sendEmailer(email, 'otp', { name: name, otp: Otp });
 
       res
         .status(201)
-        .send({ msg: 'User Registation succesfull !', data: Users, otp: Otp });
+        .send({ msg: 'User Registation succesfull !', data: Users });
     });
   } catch (error) {
     next(error);
@@ -79,7 +79,7 @@ async function Adminregistation(req, res, next) {
           { new: true }
         );
       }, 60000);
-
+      sendEmailer(email, 'otp', { name: name, otp: Otp });
       res
         .status(201)
         .send({ msg: 'Admin Registation succesfull !', data: Users });
