@@ -8,7 +8,7 @@ async function addCategory(req, res, next) {
   let fileName = req.files;
   let fileNames = [];
   fileName.forEach(element => {
-    fileNames.push(`${process.env.Host_Name}/uploads/${element.filename}`);
+    fileName.push(`${process.env.Host_Name}/uploads/${element.filename}`);
   });
 
   if (!name || !discription) {
@@ -55,10 +55,10 @@ async function UpdateCategory(req, res, next) {
 
     if (Array.isArray(filename)) {
       filename.forEach(element => {
-        Filenames.push(process.env.Host_Name + '/uploads/' + element.filename);
+        filename.push(process.env.Host_Name + '/uploads/' + element.filename);
       });
     } else {
-      Filenames.push(process.env.Host_Name + '/uploads/' + Filenames.filename);
+      filename.push(process.env.Host_Name + '/uploads/' + filename.filename);
     }
     let { changeName, changeDiscription } = req.body;
     let updateCategory = await categorySchema.findByIdAndUpdate(

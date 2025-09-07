@@ -13,7 +13,7 @@ async function Createproducts(req, res, next) {
     let photo = req.files;
     let Photos = [];
     photo.forEach(element => {
-      Photos.push(process.env.Host_Name + '/productPhoto/' + element.filename);
+      photo.push(process.env.Host_Name + '/productPhoto/' + element.filename);
     });
     let product = new productScema({
       name,
