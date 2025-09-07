@@ -49,8 +49,6 @@ router.post(
 router.get(
   '/getCategory',
   ErrorCheck,
-  authMidleware,
-  AdminMidleware,
   ReadCategory
 );
 router.patch(

@@ -55,13 +55,7 @@ router.post(
 router.post('/CreateReviews', ErrorCheck, authMidleware, makeReviews);
 router.get('/getReviews', ErrorCheck, authMidleware, getReviews);
 router.get('/product/search', ErrorCheck, authMidleware, searchProducts);
-router.get(
-  '/GetProducts',
-  ErrorCheck,
-  authMidleware,
-  AdminMidleware,
-  readProduct
-);
+router.get('/GetProducts', ErrorCheck, readProduct);
 router.patch(
   '/updateProduct/:id',
   productPhoto.array('photo', 12),
