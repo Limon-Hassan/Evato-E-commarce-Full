@@ -1,5 +1,5 @@
 const Notification = require('../Model/notifiactionSchema');
-const { io } = require('../socket_server');
+const { getIO } = require('../socket_server');
 
 async function createNotify(req, res, next) {
   try {
@@ -12,7 +12,7 @@ async function createNotify(req, res, next) {
     let newNotify = new Notification({ user, message, type });
     await newNotify.save();
 
-    io.to(user.toString()).emit('notification', {
+    getIO().to(user.toString()).emit('notification', {
       _id: newNotify._id,
       message: newNotify.message,
       type: newNotify.type,

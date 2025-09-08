@@ -1,6 +1,6 @@
 const productScema = require('../Model/productScema');
 const ReviewsSchema = require('../Model/ReviewsSchema');
-let { io } = require('../socket_server');
+let { getIO } = require('../socket_server');
 
 async function makeReviews(req, res, next) {
   let { productId, rating, comment } = req.body;
@@ -16,7 +16,7 @@ async function makeReviews(req, res, next) {
       $push: { reviews: reviews._id },
     });
 
-    io.emit('reviewCreated', {
+    getIO().emit('reviewCreated', {
       productId,
       review: await reviews.populate('user', 'name'),
     });

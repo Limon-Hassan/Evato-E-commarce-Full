@@ -1,6 +1,6 @@
 const productScema = require('../Model/productScema');
 const SearchHistory = require('../Model/searchSchema');
-const { io } = require('../socket_server');
+const { getIO } = require('../socket_server');
 
 async function searchProducts(req, res, next) {
   try {
@@ -82,7 +82,7 @@ async function searchProducts(req, res, next) {
     if (userId && query) await SearchHistory.create({ user: userId, query });
 
     if (query && userId) {
-      io.to(userId.toString()).emit('searchSuggestion', {
+      getIO().to(userId.toString()).emit('searchSuggestion', {
         query,
         suggestions: products.map(p => p.name).slice(0, 5),
       });

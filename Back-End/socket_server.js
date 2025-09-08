@@ -1,25 +1,21 @@
 const { Server } = require('socket.io');
-const http = require('http');
-const express = require('express');
+let io;
 
-const app = express();
-const server = http.createServer(app);
+function init(server) {
+  io = new Server(server, {
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST'],
+    },
+  });
+  return io;
+}
 
-const io = new Server(server, {
-  cors: { origin: '*', methods: ['GET', 'POST'] },
-});
+function getIO() {
+  if (!io) {
+    throw new Error('Socket.io not initialized!');
+  }
+  return io;
+}
 
-io.on('connection', socket => {
-  console.log('✅ User connected:', socket.id);
-  socket.on('joinUser', ({ userId }) => socket.join(userId));
-  socket.on('joinAdmin', ({ adminId }) => socket.join('adminRoom'));
-  socket.on('disconnect', () =>
-    console.log('❌ User disconnected:', socket.id)
-  );
-});
-
-server.listen(process.env.SOCKET_PORT || 5000, () =>
-  console.log('Socket server running')
-);
-
-module.exports = io;
+module.exports = { init, getIO };

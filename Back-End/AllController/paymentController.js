@@ -1,5 +1,5 @@
 const Stripe = require('stripe');
-const { io } = require('../socket_server');
+const { getIO } = require('../socket_server');
 const CheckoutSchema = require('../Model/CheckoutSchema');
 const paymentSchema = require('../Model/paymentSchema');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
@@ -55,7 +55,7 @@ async function createPayment(req, res, next) {
     });
     await newPayment.save();
 
-    io.to(order.user._id.toString()).emit('payment_initiated', {
+    getIO().to(order.user._id.toString()).emit('payment_initiated', {
       msg: 'Payment has been initiated. Waiting for confirmation...',
       orderId: order._id,
     });
@@ -106,7 +106,7 @@ async function capturePayment(req, res, next) {
     payment.order.paymentStatus = 'paid';
     await payment.order.save();
 
-    io.to(payment.user._id.toString()).emit('paymentSuccess', {
+    getIO().to(payment.user._id.toString()).emit('paymentSuccess', {
       orderId: payment.order._id,
       amount: payment.amount,
     });

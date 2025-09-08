@@ -1,6 +1,6 @@
 const CartSchema = require('../Model/CartSchema');
 const productScema = require('../Model/productScema');
-let { io } = require('../socket_server');
+let { getIO } = require('../socket_server');
 
 async function CreateCart(req, res, next) {
   let { user, product } = req.body;
@@ -39,7 +39,7 @@ async function CreateCart(req, res, next) {
     });
 
     await Cart.save();
-    io.to(user).emit('cartADD', Cart);
+    getIO().to(user).emit('cartADD', Cart);
     return res
       .status(200)
       .send({ msg: 'Product Added to Cart Successfully !', data: Cart });
@@ -65,7 +65,7 @@ async function readcart(req, res, next) {
       price: item.product.price,
       quantity: item.quantity,
     }));
-    io.to(id).emit('CartData', CartData);
+    getIO().to(id).emit('CartData', CartData);
     return res.status(200).send(CartData);
   } catch (error) {
     next(error);
@@ -101,7 +101,7 @@ async function CartSummery(req, res, next) {
       discount,
       totalPrice,
     };
-    io.to(id).emit('cartSummery', Cartsummery);
+    getIO().to(id).emit('cartSummery', Cartsummery);
     return res.status(200).send(Cartsummery);
   } catch (error) {
     next(error);
@@ -159,7 +159,7 @@ async function IncreamentCart(req, res, next) {
       });
     }
     await cartItem.save();
-    io.to(cartItem.user.toString()).emit('cartItem', cartItem);
+    getIO().to(cartItem.user.toString()).emit('cartItem', cartItem);
     return res.status(200).json({
       msg: `Cart ${
         action === 'Increment' ? 'Incremented' : 'Decremented'
@@ -179,7 +179,7 @@ async function DeleteCart(req, res, next) {
     if (action === 'single') {
       let deleteCart = await CartSchema.findById(id);
       deleteCart.deleteOne();
-      io.to(deleteCart.user.toString()).emit('cartDeleted', id);
+      getIO().to(deleteCart.user.toString()).emit('cartDeleted', id);
       return res.status(200).send({ msg: 'cart delete Successfully !', id });
     } else if (action === 'clear') {
       let deleteManyCart = await CartSchema.deleteMany({ user: userid });

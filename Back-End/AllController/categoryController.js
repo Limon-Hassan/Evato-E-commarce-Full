@@ -1,6 +1,6 @@
 const categorySchema = require('../Model/categorySchema');
 let cloudinary = require('../Halper/Cloudinary');
-let { io } = require('../socket_server');
+let { getIO } = require('../socket_server');
 const productScema = require('../Model/productScema');
 
 async function addCategory(req, res, next) {
@@ -18,7 +18,7 @@ async function addCategory(req, res, next) {
       image: imageUrls,
     });
     await category.save();
-    io.emit('categoryCreated', category);
+    getIO().emit('categoryCreated', category);
     return res
       .status(200)
       .send({ msg: 'category added successfully !', data: category });
@@ -74,7 +74,7 @@ async function UpdateCategory(req, res, next) {
       { name: changeName, discription: changeDiscription, image: imageUrl },
       { new: true }
     );
-    io.emit('categoryUpdated', updateCategory);
+    getIO().emit('categoryUpdated', updateCategory);
     return res.send({
       msg: 'Update Category successfully !',
       data: updateCategory,
@@ -103,7 +103,7 @@ async function DeleteCategory(req, res, next) {
       }
     });
     await Promise.all(deletePromise);
-    io.emit('categoryDeleted', id);
+    getIO().emit('categoryDeleted', id);
     return res.send({ msg: 'category delete successfully !', id });
   } catch (error) {
     next(error);
