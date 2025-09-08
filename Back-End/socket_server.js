@@ -1,11 +1,6 @@
 const { Server } = require('socket.io');
-const http = require('http');
-const express = require('express');
-const app = express();
-const server = http.createServer(app);
-app.get('/', (req, res) => {
-  res.send('Socket server is ready!');
-});
+const server = require('./main');
+
 const io = new Server(server, {
   cors: {
     origin: '*',
@@ -24,6 +19,4 @@ io.on('connection', socket => {
   );
 });
 
-server.listen(process.env.PORT, () =>
-  console.log('Socket server running on port 5000')
-);
+module.exports = io;

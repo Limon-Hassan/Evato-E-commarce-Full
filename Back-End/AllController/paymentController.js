@@ -1,5 +1,5 @@
 const Stripe = require('stripe');
-const socket = require('../Halper/socketClient');
+const { io } = require('../socket_server');
 const CheckoutSchema = require('../Model/CheckoutSchema');
 const paymentSchema = require('../Model/paymentSchema');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
@@ -55,7 +55,6 @@ async function createPayment(req, res, next) {
     });
     await newPayment.save();
 
-    const io = socket;
     io.to(order.user._id.toString()).emit('payment_initiated', {
       msg: 'Payment has been initiated. Waiting for confirmation...',
       orderId: order._id,
@@ -107,7 +106,6 @@ async function capturePayment(req, res, next) {
     payment.order.paymentStatus = 'paid';
     await payment.order.save();
 
-    const io = socket;
     io.to(payment.user._id.toString()).emit('paymentSuccess', {
       orderId: payment.order._id,
       amount: payment.amount,

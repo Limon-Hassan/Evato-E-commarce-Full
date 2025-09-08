@@ -1,7 +1,7 @@
 const sendEmailer = require('../Halper/sendEmail');
 const CartSchema = require('../Model/CartSchema');
 const CheckoutSchema = require('../Model/CheckoutSchema');
-const socket = require('../Halper/socketClient');
+const { io } = require('../socket_server');
 
 async function checkout(req, res, next) {
   let { id } = req.params;
@@ -65,7 +65,7 @@ async function checkout(req, res, next) {
       delivery,
     });
     await newOder.save();
-    socket.to(id).emit('orderPlaced', {
+    io.to(id).emit('orderPlaced', {
       msg: 'Order placed successfully!',
       orderID: uniqueOrderId,
       order: newOder,
@@ -149,7 +149,7 @@ async function updateCheckout(req, res, next) {
       return res.status(400).send({ msg: 'invaild action for this user !' });
     }
     await userRoll.save();
-    socket.to(userRoll.user._id.toString()).emit('orderStatus', {
+    io.to(userRoll.user._id.toString()).emit('orderStatus', {
       orderId: userRoll._id,
       deliveryStatus: userRoll.delivery,
       msg: `Your order status changed to ${userRoll.delivery}`,
@@ -203,7 +203,7 @@ async function AdminDecision(req, res, next) {
     }
 
     await adminWork.save();
-    socket.to(adminWork.user._id.toString()).emit('orderStatusUpdate', {
+    io.to(adminWork.user._id.toString()).emit('orderStatusUpdate', {
       orderId: adminWork._id,
       orderStatus: adminWork.delivery,
       msg: `Your order status changed to ${order.delivery}`,
