@@ -39,7 +39,7 @@ async function CreateCart(req, res, next) {
     });
 
     await Cart.save();
-    io.to(user).emit('cartADD', Cart);
+    // io.to(user).emit('cartADD', Cart);
     return res
       .status(200)
       .send({ msg: 'Product Added to Cart Successfully !', data: Cart });
