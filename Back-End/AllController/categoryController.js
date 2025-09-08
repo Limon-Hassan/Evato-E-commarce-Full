@@ -5,7 +5,8 @@ let socket = require('../Halper/socketClient');
 async function addCategory(req, res, next) {
   let { name, discription } = req.body;
 
-  let imageUrls = req.files ? req.files.map(file => file.path) : [];
+  let imageUrls =
+    req.files && req.files.length > 0 ? req.files.map(file => file.path) : [];
   if (!name || !discription) {
     return res.status(400).send({ msg: 'Please Enter all the fields !' });
   }
@@ -45,7 +46,7 @@ async function ReadCategory(req, res, next) {
 async function UpdateCategory(req, res, next) {
   let { id } = req.params;
   try {
-    let imageUrl = req.files ? req.files.map(file => file.path) : [];
+    let imageUrl = req.files && req.files.length > 0 ? req.files.map(file => file.path) : [];
     let { changeName, changeDiscription } = req.body;
     let updateCategory = await categorySchema.findByIdAndUpdate(
       { _id: id },

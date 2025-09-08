@@ -9,7 +9,8 @@ async function Createproducts(req, res, next) {
     return res.status(400).send({ msg: 'please Enter all the fields !' });
   }
   try {
-    let photo = req.files ? req.files.map(file => file.path) : [];
+    let photo =
+      req.files && req.files.length > 0 ? req.files.map(file => file.path) : [];
 
     let product = new productScema({
       name,
@@ -84,7 +85,8 @@ async function updateProducts(req, res, next) {
     Changestock,
   } = req.body;
   try {
-    let photosURL = req.files ? req.files.map(file => file.path) : [];
+    let photosURL =
+      req.files && req.files.length > 0 ? req.files.map(file => file.path) : [];
     let updateProduct = await productScema.findByIdAndUpdate(
       { _id: id },
       {
