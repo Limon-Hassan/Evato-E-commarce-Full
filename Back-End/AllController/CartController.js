@@ -178,7 +178,10 @@ async function DeleteCart(req, res, next) {
   try {
     if (action === 'single') {
       let deleteCart = await CartSchema.findById(id);
-      deleteCart.deleteOne();
+      if (!deleteCart) {
+        return res.status(404).send({ msg: 'cart not found !' });
+      }
+      await deleteCart.deleteOne();
       getIO().to(deleteCart.user.toString()).emit('cartDeleted', id);
       return res.status(200).send({ msg: 'cart delete Successfully !', id });
     } else if (action === 'clear') {
