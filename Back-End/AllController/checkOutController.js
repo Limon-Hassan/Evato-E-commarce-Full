@@ -1,6 +1,7 @@
 const sendEmailer = require('../Halper/sendEmail');
 const CartSchema = require('../Model/CartSchema');
 const CheckoutSchema = require('../Model/CheckoutSchema');
+const { v4: uuidv4 } = require('uuid');
 const { getIO } = require('../socket_server');
 
 async function checkout(req, res, next) {
@@ -67,7 +68,7 @@ async function checkout(req, res, next) {
     await newOder.save();
     getIO().to(id).emit('orderPlaced', {
       msg: 'Order placed successfully!',
-      orderID: uniqueOrderId,
+      orderID: orderID,
       order: newOder,
     });
     await CartSchema.deleteMany({ user: id });
@@ -106,7 +107,9 @@ async function ReadCheckout(req, res, next) {
     }
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error !' });
+    return res
+      .status(500)
+      .send({ msg: 'server error !', error: error.message });
   }
 }
 
@@ -123,7 +126,9 @@ async function AdminReadCheckout(req, res, next) {
     }
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error !' });
+    return res
+      .status(500)
+      .send({ msg: 'server error !', error: error.message });
   }
 }
 
@@ -160,7 +165,9 @@ async function updateCheckout(req, res, next) {
     return res.json({ msg: 'Order status updated', userRoll });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error !' });
+    return res
+      .status(500)
+      .send({ msg: 'server error !', error: error.message });
   }
 }
 
@@ -217,7 +224,9 @@ async function AdminDecision(req, res, next) {
       .send({ msg: 'order status updated !', data: adminWork });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error !' });
+    return res
+      .status(500)
+      .send({ msg: 'server error !', error: error.message });
   }
 }
 
