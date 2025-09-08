@@ -14,8 +14,9 @@ const AdminMidleware = require('../../Midleware/AdminMidleware');
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'evato_categories', 
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'svg'],
+    folder: 'evato_categories',
+    resource_type: 'auto',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webm'],
   },
 });
 
