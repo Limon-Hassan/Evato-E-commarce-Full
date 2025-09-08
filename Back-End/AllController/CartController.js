@@ -183,7 +183,7 @@ async function DeleteCart(req, res, next) {
       return res.status(200).send({ msg: 'cart delete Successfully !', id });
     } else if (action === 'clear') {
       let deleteManyCart = await CartSchema.deleteMany({ user: userid });
-      socket.to(userid).emit('CartDeleted', userid);
+      getIO().to(userid).emit('CartDeleted', userid);
       return res
         .status(200)
         .send({ msg: 'All cart delete Successfully !', deleteManyCart });
@@ -192,6 +192,7 @@ async function DeleteCart(req, res, next) {
     }
   } catch (error) {
     next(error);
+    return res.status(500).send({ msg: 'server error!' });
   }
 }
 module.exports = {
