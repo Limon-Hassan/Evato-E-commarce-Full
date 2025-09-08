@@ -22,8 +22,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'evato_Photos',
-    resource_type: 'auto',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webm'],
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'],
   },
 });
 
