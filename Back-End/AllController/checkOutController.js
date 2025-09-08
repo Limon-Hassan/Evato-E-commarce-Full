@@ -78,7 +78,7 @@ async function checkout(req, res, next) {
       .send({ msg: 'order placed successfully !', order: newOder });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error!' });
+    return res.status(500).send({ msg: 'server error!', error: error.message });
   }
 }
 
@@ -149,11 +149,13 @@ async function updateCheckout(req, res, next) {
       return res.status(400).send({ msg: 'invaild action for this user !' });
     }
     await userRoll.save();
-    getIO().to(userRoll.user._id.toString()).emit('orderStatus', {
-      orderId: userRoll._id,
-      deliveryStatus: userRoll.delivery,
-      msg: `Your order status changed to ${userRoll.delivery}`,
-    });
+    getIO()
+      .to(userRoll.user._id.toString())
+      .emit('orderStatus', {
+        orderId: userRoll._id,
+        deliveryStatus: userRoll.delivery,
+        msg: `Your order status changed to ${userRoll.delivery}`,
+      });
 
     return res.json({ msg: 'Order status updated', userRoll });
   } catch (error) {
@@ -203,11 +205,13 @@ async function AdminDecision(req, res, next) {
     }
 
     await adminWork.save();
-    getIO().to(adminWork.user._id.toString()).emit('orderStatusUpdate', {
-      orderId: adminWork._id,
-      orderStatus: adminWork.delivery,
-      msg: `Your order status changed to ${order.delivery}`,
-    });
+    getIO()
+      .to(adminWork.user._id.toString())
+      .emit('orderStatusUpdate', {
+        orderId: adminWork._id,
+        orderStatus: adminWork.delivery,
+        msg: `Your order status changed to ${order.delivery}`,
+      });
     return res
       .status(200)
       .send({ msg: 'order status updated !', data: adminWork });
