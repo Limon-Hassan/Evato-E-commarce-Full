@@ -17,6 +17,10 @@ let CategorySchema = new mongoose.Schema(
         ref: 'Products',
       },
     ],
+    totalproducts: {
+      type: Number,
+      default: 0,
+    },
     image: {
       type: Array,
       required: true,

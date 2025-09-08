@@ -1,6 +1,7 @@
 const categorySchema = require('../Model/categorySchema');
 let cloudinary = require('../Halper/Cloudinary');
 let socket = require('../Halper/socketClient');
+const productScema = require('../Model/productScema');
 
 async function addCategory(req, res, next) {
   let { name, discription } = req.body;
@@ -32,10 +33,29 @@ async function ReadCategory(req, res, next) {
   try {
     if (id) {
       let singleCategory = await categorySchema.findById(id);
-      return res.send(singleCategory);
+      let totalProducts = await productScema.countDocuments({
+        singleCategory: id,
+      });
+      let categoryObj = singleCategory.toObject();
+      categoryObj.totalProducts = totalProducts;
+      return res.send(categoryObj);
     } else {
-      let GetAllCategory = await categorySchema.find();
-      return res.send(GetAllCategory);
+      let categories = await categorySchema.find();
+      let categoriesWithCount = await Promise.all(
+        categories.map(async category => {
+          let totalProducts = await productScema.countDocuments({
+            category: category._id,
+          });
+          return {
+            _id: category._id,
+            name: category.name,
+            discription: category.discription,
+            image: category.image,
+            totalProducts,
+          };
+        })
+      );
+      return res.send(categoriesWithCount);
     }
   } catch (error) {
     next(error);
@@ -46,7 +66,8 @@ async function ReadCategory(req, res, next) {
 async function UpdateCategory(req, res, next) {
   let { id } = req.params;
   try {
-    let imageUrl = req.files && req.files.length > 0 ? req.files.map(file => file.path) : [];
+    let imageUrl =
+      req.files && req.files.length > 0 ? req.files.map(file => file.path) : [];
     let { changeName, changeDiscription } = req.body;
     let updateCategory = await categorySchema.findByIdAndUpdate(
       { _id: id },
