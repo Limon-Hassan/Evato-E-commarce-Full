@@ -1,16 +1,11 @@
 const categorySchema = require('../Model/categorySchema');
-const path = require('path');
-const fs = require('fs');
+let cloudinary = require('../Halper/Cloudinary');
 let socket = require('../Halper/socketClient');
 
 async function addCategory(req, res, next) {
   let { name, discription } = req.body;
-  let fileName = req.files;
-  let fileNames = [];
-  fileName.forEach(element => {
-    fileName.push(`${process.env.Host_Name}/uploads/${element.filename}`);
-  });
 
+  let imageUrls = req.files ? req.files.map(file => file.path) : [];
   if (!name || !discription) {
     return res.status(400).send({ msg: 'Please Enter all the fields !' });
   }
@@ -18,7 +13,7 @@ async function addCategory(req, res, next) {
     let category = new categorySchema({
       name,
       discription,
-      image: fileNames,
+      image: imageUrls,
     });
     await category.save();
     socket.emit('categoryCreated', category);
@@ -50,20 +45,11 @@ async function ReadCategory(req, res, next) {
 async function UpdateCategory(req, res, next) {
   let { id } = req.params;
   try {
-    let filename = req.files;
-    let Filenames = [];
-
-    if (Array.isArray(filename)) {
-      filename.forEach(element => {
-        filename.push(process.env.Host_Name + '/uploads/' + element.filename);
-      });
-    } else {
-      filename.push(process.env.Host_Name + '/uploads/' + filename.filename);
-    }
+    let imageUrl = req.files ? req.files.map(file => file.path) : [];
     let { changeName, changeDiscription } = req.body;
     let updateCategory = await categorySchema.findByIdAndUpdate(
       { _id: id },
-      { name: changeName, discription: changeDiscription, image: Filenames },
+      { name: changeName, discription: changeDiscription, image: imageUrl },
       { new: true }
     );
     socket.emit('categoryUpdated', updateCategory);
@@ -86,21 +72,13 @@ async function DeleteCategory(req, res, next) {
     }
     await DeleteCategory.deleteOne();
 
-    let deletePromise = DeleteCategory.image.map(element => {
-      return new Promise((resolve, reject) => {
-        let deleteImage = path.join(
-          __dirname,
-          '../uploads',
-          element.split('/').pop()
-        );
-        fs.unlink(deleteImage, err => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
+    let deletePromise = DeleteCategory.image.map(async url => {
+      try {
+        const publicId = url.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(`evato_categories/${publicId}`);
+      } catch (err) {
+        console.error('Failed to delete image from Cloudinary:', err);
+      }
     });
     await Promise.all(deletePromise);
     socket.emit('categoryDeleted', id);

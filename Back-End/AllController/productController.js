@@ -1,7 +1,6 @@
 const categorySchema = require('../Model/categorySchema');
 const productScema = require('../Model/productScema');
-let path = require('path');
-let fs = require('fs');
+let cloudinary = require('../Halper/Cloudinary');
 let socket = require('../Halper/socketClient');
 
 async function Createproducts(req, res, next) {
@@ -10,16 +9,13 @@ async function Createproducts(req, res, next) {
     return res.status(400).send({ msg: 'please Enter all the fields !' });
   }
   try {
-    let photo = req.files;
-    let Photos = [];
-    photo.forEach(element => {
-      photo.push(process.env.Host_Name + '/productPhoto/' + element.filename);
-    });
+    let photo = req.files ? req.files.map(file => file.path) : [];
+
     let product = new productScema({
       name,
       discription,
       category,
-      photo: Photos,
+      photo: photo,
       price,
       stock,
     });
@@ -88,20 +84,7 @@ async function updateProducts(req, res, next) {
     Changestock,
   } = req.body;
   try {
-    let photo = req.files;
-    let Photos = [];
-    const host = (process.env.Host_Name || '').replace(/\/$/, '');
-
-    if (files) {
-      if (Array.isArray(photo)) {
-        files.forEach(f => {
-          photo.push(`${host}/productPhoto/${f.filename}`);
-        });
-      } else {
-        photo.push(`${host}/productPhoto/${files.filename}`);
-      }
-    }
-
+    let photosURL = req.files ? req.files.map(file => file.path) : [];
     let updateProduct = await productScema.findByIdAndUpdate(
       { _id: id },
       {
@@ -109,7 +92,7 @@ async function updateProducts(req, res, next) {
         discription: ChangeDriscription,
         price: ChangePrice,
         category: ChangeCategory,
-        photo: Photos,
+        photo: photosURL,
         stock: Changestock,
       },
       { new: true }
@@ -135,22 +118,13 @@ async function DeleteProduct(req, res, next) {
       return res.status(404).send({ msg: 'product not found !' });
     }
     await Deleteproducts.deleteOne();
-    let Deletepromise = Deleteproducts.photo.map(element => {
-      return new Promise((resolve, reject) => {
-        let deletePhoto = path.join(
-          __dirname,
-          '../productPhoto',
-          element.split('/').pop()
-        );
-
-        fs.unlink(deletePhoto, err => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
+    let Deletepromise = Deleteproducts.photo.map(async url => {
+      try {
+        const publicId = url.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(`evato_Photos/${publicId}`);
+      } catch (err) {
+        console.error('Failed to delete image from Cloudinary:', err);
+      }
     });
     await Promise.all(Deletepromise);
     socket.emit('productDeleted', id);
