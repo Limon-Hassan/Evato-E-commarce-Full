@@ -144,4 +144,4 @@ module.exports = {
   topProducts,
   DeleteProduct,
 };
-module.exports = { Createproducts, readProduct, updateProducts, DeleteProduct };
+
