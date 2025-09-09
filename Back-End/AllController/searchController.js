@@ -4,15 +4,8 @@ const { getIO } = require('../socket_server');
 
 async function searchProducts(req, res, next) {
   try {
-    let {
-      query,
-      minPrice,
-      maxPrice,
-      sort,
-      userId,
-      page = 1,
-      limit = 12,
-    } = req.query;
+    let { query, minPrice, maxPrice, sort, page = 1, limit = 12 } = req.query;
+    let userId = req.user ? req.user.id : null;
     query = query?.trim();
     page = Number(page);
     limit = Number(limit);
@@ -79,14 +72,14 @@ async function searchProducts(req, res, next) {
         .populate({ path: 'category', select: 'name discription image' });
     }
 
-    if (userId && query) await SearchHistory.create({ user: userId, query });
-
-    if (query && userId) {
-      getIO().to(userId.toString()).emit('searchSuggestion', {
-        query,
-        suggestions: products.map(p => p.name).slice(0, 5),
-      });
+    if (userId) {
+      await SearchHistory.create({ user: userId, query });
     }
+
+    getIO().emit('searchSuggestion', {
+      query,
+      suggestions: products.map(p => p.name).slice(0, 5),
+    });
 
     return res.status(200).json({
       msg: 'Search results',
