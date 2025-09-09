@@ -30,7 +30,6 @@ const Page1 = () => {
           </div>
         </Container>
       </section>
-      <Page2></Page2>
     </>
   );
 };

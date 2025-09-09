@@ -1,5 +1,7 @@
 const userSchema = require('../Model/userSchema');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const { OAuth2Client } = require('google-auth-library');
 let jwt = require('jsonwebtoken');
 const sendEmailer = require('../Halper/sendEmail');
 
@@ -139,6 +141,39 @@ async function login(req, res, next) {
     next(error);
   }
 }
+
+async function googleLogin(req, res, next) {
+  try {
+    const user = req.user; 
+
+    if (!user) {
+      return res.status(400).send({ msg: 'Google login failed!' });
+    }
+
+    const payload = {
+      id: user._id,
+      email: user.email,
+      Role: user.Roll,
+    };
+
+    const token = jwt.sign({ payload }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    res.cookie('userToken', token, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 1000,
+    });
+
+    res.redirect('http://localhost:5173');
+  } catch (err) {
+    next(err);
+    return res.send({ msg: 'server error !', error: err.message });
+  }
+}
+
 async function alluser(req, res) {
   if (req.user.Role === 'user') {
     userInfo = await userSchema
@@ -211,5 +246,6 @@ module.exports = {
   alluser,
   adminUsers,
   otpVerify,
+  googleLogin,
   resntOTP,
 };

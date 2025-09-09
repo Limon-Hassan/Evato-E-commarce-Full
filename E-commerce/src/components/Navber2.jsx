@@ -74,7 +74,6 @@ const Navber2 = () => {
           </div>
         </Container>
       </nav>
-      <Page1></Page1>
     </>
   );
 };

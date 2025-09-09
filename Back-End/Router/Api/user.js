@@ -8,6 +8,7 @@ const {
   adminUsers,
   otpVerify,
   resntOTP,
+  googleLogin,
 } = require('../../AllController/AuthController');
 const authMidleware = require('../../Midleware/authMidleware');
 const AdminMidleware = require('../../Midleware/AdminMidleware');
@@ -20,5 +21,13 @@ router.post('/otp-verify', otpVerify);
 router.post('/resent-otp', resntOTP);
 router.get('/users', authMidleware, alluser);
 router.get('/adminusers', AdminMidleware, adminUsers);
-
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  googleLogin
+);
 module.exports = router;

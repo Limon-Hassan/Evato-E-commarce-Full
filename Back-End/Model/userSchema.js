@@ -18,7 +18,9 @@ let userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.googleId;
+      },
     },
     otp: {
       type: String,
@@ -37,6 +39,11 @@ let userSchema = new mongoose.Schema(
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
   },
   {

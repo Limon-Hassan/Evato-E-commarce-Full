@@ -45,7 +45,7 @@ const Page2 = () => {
                     <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
                       <img
                         className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="01.webp"
+                        src="ww05.jpg"
                         alt="Organic Vegetable"
                       />
                       <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
@@ -60,7 +60,7 @@ const Page2 = () => {
                     <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
                       <img
                         className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="01.webp"
+                        src="11107.jpg"
                         alt="Organic Vegetable"
                       />
                       <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
@@ -75,7 +75,7 @@ const Page2 = () => {
                     <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
                       <img
                         className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="01.webp"
+                        src="22206.jpg"
                         alt="Organic Vegetable"
                       />
                       <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
@@ -90,7 +90,7 @@ const Page2 = () => {
                     <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
                       <img
                         className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="01.webp"
+                        src="0444.jpg"
                         alt="Organic Vegetable"
                       />
                       <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
@@ -105,7 +105,7 @@ const Page2 = () => {
                     <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
                       <img
                         className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="01.webp"
+                        src="0001.jpg"
                         alt="Organic Vegetable"
                       />
                       <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
@@ -120,7 +120,7 @@ const Page2 = () => {
                     <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
                       <img
                         className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="01.webp"
+                        src="2208.jpg"
                         alt="Organic Vegetable"
                       />
                       <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
@@ -135,7 +135,7 @@ const Page2 = () => {
                     <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
                       <img
                         className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="01.webp"
+                        src="2208.jpg"
                         alt="Organic Vegetable"
                       />
                       <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
@@ -150,7 +150,7 @@ const Page2 = () => {
                     <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
                       <img
                         className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="01.webp"
+                        src="2208.jpg"
                         alt="Organic Vegetable"
                       />
                       <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
@@ -165,7 +165,7 @@ const Page2 = () => {
                     <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
                       <img
                         className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="01.webp"
+                        src="2208.jpg"
                         alt="Organic Vegetable"
                       />
                       <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
@@ -180,7 +180,6 @@ const Page2 = () => {
           </div>
         </Container>
       </section>
-      <Page3></Page3>
     </>
   );
 };

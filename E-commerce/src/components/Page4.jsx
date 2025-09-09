@@ -95,7 +95,6 @@ const Page4 = () => {
           </div>
         </Container>
       </section>
-      <Page5></Page5>
     </>
   );
 };

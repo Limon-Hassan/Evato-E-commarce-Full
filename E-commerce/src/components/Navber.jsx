@@ -64,7 +64,6 @@ const Navber = () => {
           </div>
         </Container>
       </nav>
-      <Navber2></Navber2>
     </>
   );
 };

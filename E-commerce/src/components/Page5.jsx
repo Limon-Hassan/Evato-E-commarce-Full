@@ -21,7 +21,7 @@ const Page5 = () => {
                 <div className=" w-[230px] h-[220px] flex items-center justify-center border border-[#eaeaea] rounded-[6px] ">
                   <img
                     className="group-hover:scale-110 ease-in-out duration-300"
-                    src="05.webp"
+                    src="2208.jpg"
                     alt=""
                   />
                 </div>
@@ -57,7 +57,7 @@ const Page5 = () => {
                 <div className=" w-[230px] h-[220px] flex items-center justify-center border border-[#eaeaea] rounded-[6px] ">
                   <img
                     className="group-hover:scale-110 ease-in-out duration-300"
-                    src="08.webp"
+                    src="0001.jpg"
                     alt=""
                   />
                 </div>
@@ -93,7 +93,7 @@ const Page5 = () => {
                 <div className=" w-[230px] h-[220px] flex items-center justify-center border border-[#eaeaea] rounded-[6px] ">
                   <img
                     className="group-hover:scale-110 ease-in-out duration-300"
-                    src="01.webp"
+                    src="22206.jpg"
                     alt=""
                   />
                 </div>
@@ -129,7 +129,6 @@ const Page5 = () => {
           </div>
         </Container>
       </section>
-      <Page6></Page6>
     </>
   );
 };

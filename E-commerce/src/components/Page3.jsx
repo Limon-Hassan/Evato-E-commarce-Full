@@ -634,7 +634,6 @@ const Page3 = () => {
           </div>
         </Container>
       </section>
-      <Page4></Page4>
     </>
   );
 };

@@ -14,7 +14,7 @@ const Page6 = () => {
       <section className="bg-[#dbe2e9]/30 pb-[50px] pt-[60px]">
         <Container>
           <div>
-            <div className="bg-white rounded-[8px] p-[30px] ">
+            <div className="bg-white rounded-[8px] p-[30px]">
               <div className="flex items-center justify-between border-b border-black/20 pb-[30px]">
                 <h4 className="text-[30px] font-display leading-1.5 font-bold text-[#2C3C28] ">
                   Recently Added
@@ -284,16 +284,16 @@ const Page6 = () => {
                 </Swiper>
               </div>
             </div>
-            <div className="bg-white rounded-[8px] p-[30px] ">
+            <div className="bg-white rounded-[8px] p-[30px]">
               <div className="flex items-center justify-between border-b border-black/20 pb-[30px]">
                 <h4 className="text-[30px] font-display leading-1.5 font-bold text-[#2C3C28] ">
                   Top Rated
                 </h4>
                 <span className="flex items-center gap-3">
-                  <button className="swiper-button-prev-custom bg-[#fff] hover:bg-[#629D23] w-[33px] h-[33px] border border-[#629D23] hover:text-white rounded-[8px] flex justify-center items-center ease-in-out duration-300 cursor-pointer">
+                  <button className="swiper-button-prev-customs bg-[#fff] hover:bg-[#629D23] w-[33px] h-[33px] border border-[#629D23] hover:text-white rounded-[8px] flex justify-center items-center ease-in-out duration-300 cursor-pointer">
                     <i class="fa-regular fa-arrow-left-from-arc"></i>
                   </button>
-                  <button className="swiper-button-next-custom  bg-[#fff] hover:bg-[#629D23] w-[33px] h-[33px] border border-[#629D23] rounded-[8px]  hover:text-white flex justify-center items-center ease-in-out duration-300 cursor-pointer">
+                  <button className="swiper-button-next-customs  bg-[#fff] hover:bg-[#629D23] w-[33px] h-[33px] border border-[#629D23] rounded-[8px]  hover:text-white flex justify-center items-center ease-in-out duration-300 cursor-pointer">
                     <i class="fa-regular fa-arrow-right-from-arc"></i>
                   </button>
                 </span>
@@ -307,8 +307,8 @@ const Page6 = () => {
                   loop={true}
                   speed={800}
                   navigation={{
-                    nextEl: '.swiper-button-next-custom',
-                    prevEl: '.swiper-button-prev-custom',
+                    nextEl: '.swiper-button-next-customs',
+                    prevEl: '.swiper-button-prev-customs',
                   }}
                 >
                   <SwiperSlide>
