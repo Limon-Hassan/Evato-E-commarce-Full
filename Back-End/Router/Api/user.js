@@ -1,5 +1,6 @@
 let express = require('express');
 let router = express.Router();
+const passport = require('passport');
 const {
   registation,
   login,

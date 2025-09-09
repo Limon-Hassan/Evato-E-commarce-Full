@@ -1,7 +1,6 @@
 const userSchema = require('../Model/userSchema');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
-const { OAuth2Client } = require('google-auth-library');
 let jwt = require('jsonwebtoken');
 const sendEmailer = require('../Halper/sendEmail');
 
@@ -144,7 +143,7 @@ async function login(req, res, next) {
 
 async function googleLogin(req, res, next) {
   try {
-    const user = req.user; 
+    const user = req.user;
 
     if (!user) {
       return res.status(400).send({ msg: 'Google login failed!' });
