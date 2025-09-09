@@ -117,6 +117,7 @@ async function capturePayment(req, res, next) {
     });
   } catch (error) {
     next(error);
+    return res.status(500).send({ msg: 'server error', error: error.message });
   }
 }
 
