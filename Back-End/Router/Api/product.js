@@ -39,8 +39,8 @@ router.post(
   Createproducts
 );
 router.post('/CreateReviews', ErrorCheck, authMidleware, makeReviews);
-router.get('/getReviews', ErrorCheck, authMidleware, getReviews);
-router.get('/product/search', ErrorCheck, authMidleware, searchProducts);
+router.get('/getReviews', ErrorCheck,  getReviews);
+router.get('/product/search', ErrorCheck, searchProducts);
 router.get('/GetProducts', ErrorCheck, readProduct);
 router.patch(
   '/updateProduct/:id',
