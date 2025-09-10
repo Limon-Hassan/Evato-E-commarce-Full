@@ -4,6 +4,7 @@ import HomePage from './Pages/HomePage';
 import Navber2 from './components/Navber2';
 import Fotter from './components/Fotter';
 import Registration from './Pages/Registration';
+import Login from './Pages/Login';
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />}></Route>
           <Route path="/register" element={<Registration />}></Route>
+          <Route path="/login" element={<Login />}></Route>
         </Routes>
         <Fotter />
       </BrowserRouter>
