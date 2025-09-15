@@ -1,6 +1,7 @@
 import React from 'react';
 import Container from '../Container';
 import Page1 from './Page1';
+import { Link } from 'react-router-dom';
 
 const Navber2 = () => {
   return (
@@ -44,15 +45,21 @@ const Navber2 = () => {
               </div>
             </div>
             <ul className="flex gap-[40px]">
-              <li className="text-[18px] font-display font-semibold text-[#FFF] hover:text-[#629D23] ease-in-out transition-all duration-300">
+              <Link
+                to="/"
+                className="text-[18px] font-display font-semibold text-[#FFF] hover:text-[#629D23] ease-in-out transition-all duration-300"
+              >
                 <a href="#">Home</a>
-              </li>
+              </Link>
               <li className="text-[18px] font-display font-semibold text-[#FFF] hover:text-[#629D23] ease-in-out transition-all duration-300">
                 <a href="#">About</a>
               </li>
-              <li className="text-[18px] font-display font-semibold text-[#FFF] hover:text-[#629D23] ease-in-out transition-all duration-300">
+              <Link
+                to="/shop"
+                className="text-[18px] font-display font-semibold text-[#FFF] hover:text-[#629D23] ease-in-out transition-all duration-300"
+              >
                 <a href="#">Shop</a>
-              </li>
+              </Link>
               <li className="text-[18px] font-display font-semibold text-[#FFF] hover:text-[#629D23] ease-in-out transition-all duration-300">
                 <a href="#">Blog</a>
               </li>

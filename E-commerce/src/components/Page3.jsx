@@ -27,10 +27,14 @@ const Page3 = () => {
                 </button>
               </div>
             </div>
-            <div className="flex items-center gap-[27px] mt-[50px]">
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+            <div className="flex flex-wrap justify-evenly items-center gap-[24px] mt-[50px] mb-[40px]">
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -78,9 +82,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -128,9 +136,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -178,9 +190,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -228,9 +244,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -278,9 +298,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -328,11 +352,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="flex items-center gap-[27px] mt-[30px] mb-[40px]">
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -380,9 +406,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -430,9 +460,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -480,9 +514,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -530,9 +568,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
@@ -580,9 +622,13 @@ const Page3 = () => {
                   </div>
                 </div>
               </div>
-              <div className="p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px]">
-                <div className="relative bg-white w-[220px] h-[190px] rounded-[6px]">
-                  <img className="w-[100%] h-auto" src="16.jpg" alt="jpg" />
+              <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
+                <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                  <img
+                    className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
+                    src="16.jpg"
+                    alt="jpg"
+                  />
                   <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
                     <div
                       className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center

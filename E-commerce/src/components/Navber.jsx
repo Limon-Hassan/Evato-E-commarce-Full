@@ -1,6 +1,7 @@
 import React from 'react';
 import Container from '../Container';
 import Navber2 from './Navber2';
+import { Link } from 'react-router-dom';
 const Navber = () => {
   return (
     <>
@@ -8,9 +9,9 @@ const Navber = () => {
         <Container>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-[45px]">
-              <a href="#">
+              <Link to="/">
                 <img src="logo-01.svg" alt="" />
-              </a>
+              </Link>
               <div className="flex">
                 <div className="text-2xl px-[16px] py-[8px]  border border-[#e2e2e2] rounded-l-[5px]">
                   <i class="fa-thin fa-location-dot"></i>

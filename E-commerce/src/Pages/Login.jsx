@@ -44,7 +44,7 @@ const Login = () => {
                 </span>
               </button>
               <p className="text-[16px] font-display font-normal text-[#6E777D]">
-                Don't Have ANy Account ?
+                Don't Have Any Account ?
                 <Link
                   to="/register"
                   className="text-[16px] font-display font-bold text-black ml-[12px] cursor-pointer"

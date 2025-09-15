@@ -12,7 +12,7 @@ const Fotter = () => {
                 About Company
               </h3>
 
-              <div className="flex items-center gap-4 mb-[25px]">
+              <div className="flex items-center gap-4 mb-[10px]">
                 <div className="bg-white flex justify-center items-center w-[50px] h-[50px] rounded-full border border-[#e2e2e2]">
                   <i class="fa-solid fa-phone-rotary text-[#629D23] text-[24px]"></i>
                 </div>
