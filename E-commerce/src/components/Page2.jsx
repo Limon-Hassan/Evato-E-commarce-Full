@@ -6,7 +6,6 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/scrollbar';
 import Container from '../Container';
-import Page3 from './Page3';
 
 const Page2 = () => {
   return (

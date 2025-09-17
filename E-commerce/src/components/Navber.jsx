@@ -1,6 +1,5 @@
 import React from 'react';
 import Container from '../Container';
-import Navber2 from './Navber2';
 import { Link } from 'react-router-dom';
 const Navber = () => {
   return (
@@ -43,12 +42,15 @@ const Navber = () => {
               </div>
             </div>
             <div className="flex gap-5 items-center">
-              <button className="text-[18px] font-display font-medium border border-[#e2e2e2] rounded-[6px] bg-white hover:bg-[#2C3C28] transition-all ease-in-out duration-300 py-[12px] px-[28px] text-black hover:text-white  cursor-pointer">
+              <Link
+                to="/account"
+                className="text-[18px] font-display font-medium border border-[#e2e2e2] rounded-[6px] bg-white hover:bg-[#2C3C28] transition-all ease-in-out duration-300 py-[12px] px-[28px] text-black hover:text-white  cursor-pointer"
+              >
                 <span className="mr-[8px]">
                   <i class="fa-light fa-user"></i>
                 </span>
                 Account
-              </button>
+              </Link>
               <button className="text-[18px] font-display font-medium border border-[#e2e2e2] rounded-[6px] bg-white hover:bg-[#2C3C28] transition-all ease-in-out duration-300 py-[12px] px-[28px] text-black hover:text-white  cursor-pointer">
                 <span className="mr-[8px]">
                   <i class="fa-light fa-heart"></i>

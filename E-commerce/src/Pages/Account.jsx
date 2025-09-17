@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Container from '../Container';
+import OrderDetails from './OrderDetails';
+import TrackOrder from './TrackOrder';
 
 const Account = () => {
   let [active, setActive] = useState({
@@ -23,8 +25,8 @@ const Account = () => {
     <>
       <section className="py-[200px]">
         <Container>
-          <div className="flex justify-between">
-            <div>
+          <div className="flex justify-between gap-10">
+            <div className="w-[25%]">
               <ul>
                 <li
                   onClick={() => handleActive('a')}
@@ -93,10 +95,9 @@ const Account = () => {
                 </li>
               </ul>
             </div>
-            <div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Reprehenderit non provident delectus quisquam autem iste
-              accusantium deleniti unde voluptate fugit!
+            <div className="w-[75%]">
+              {active.a && <OrderDetails />}
+              {active.b && <TrackOrder />}
             </div>
           </div>
         </Container>
