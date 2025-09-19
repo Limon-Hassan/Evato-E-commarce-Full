@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Container from '../Container';
 
 const Registration = () => {
+  
   return (
     <>
       <section className="bg-[#F3F4F6] py-[60px]">

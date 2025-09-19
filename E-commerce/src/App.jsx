@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
 import Navber from './components/Navber';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -14,6 +15,7 @@ import ProductDetails from './Pages/ProductDetails';
 import Page8 from './components/Page8';
 import Cart from './Pages/Cart';
 import Checkout from './Pages/Checkout';
+import SentOTP from './Pages/SentOTP';
 
 const stripePromise = loadStripe('pk_test_1234567890');
 
@@ -32,6 +34,7 @@ function Layout() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/account" element={<Account />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/Send_OTP" element={<SentOTP />} />
         <Route
           path="/checkout"
           element={
@@ -54,7 +57,9 @@ function Layout() {
 const App = () => {
   return (
     <BrowserRouter>
-      <Layout />
+      <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
+        <Layout />
+      </SnackbarProvider>
     </BrowserRouter>
   );
 };
