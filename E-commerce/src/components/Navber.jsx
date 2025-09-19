@@ -57,12 +57,15 @@ const Navber = () => {
                 </span>
                 Wishlist
               </button>
-              <button className="text-[18px] font-display font-medium border border-[#e2e2e2] rounded-[6px] bg-white hover:bg-[#2C3C28] transition-all ease-in-out duration-300 py-[12px] px-[28px] text-black hover:text-white  cursor-pointer">
+              <Link
+                to="/Cart"
+                className="text-[18px] font-display font-medium border border-[#e2e2e2] rounded-[6px] bg-white hover:bg-[#2C3C28] transition-all ease-in-out duration-300 py-[12px] px-[28px] text-black hover:text-white  cursor-pointer"
+              >
                 <span className="mr-[8px]">
                   <i class="fa-light fa-cart-shopping"></i>
                 </span>
                 Cart
-              </button>
+              </Link>
             </div>
           </div>
         </Container>

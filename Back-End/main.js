@@ -11,7 +11,12 @@ const { init: initSocket } = require('./socket_server');
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
 
 let server = http.createServer(app);
 const io = initSocket(server);
