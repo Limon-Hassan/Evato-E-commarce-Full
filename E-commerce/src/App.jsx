@@ -57,7 +57,14 @@ function Layout() {
 const App = () => {
   return (
     <BrowserRouter>
-      <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
+      <SnackbarProvider
+        maxSnack={3}
+        autoHideDuration={3000}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
         <Layout />
       </SnackbarProvider>
     </BrowserRouter>

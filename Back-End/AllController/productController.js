@@ -6,7 +6,7 @@ let { getIO } = require('../socket_server');
 async function Createproducts(req, res, next) {
   let { name, discription, price, category, stock } = req.body;
   if (!name || !discription || !price) {
-    return res.status(400).send({ msg: 'please Enter all the fields !' });
+    return res.status(400).json({ msg: 'please Enter all the fields !' });
   }
   try {
     let photo =
@@ -30,10 +30,10 @@ async function Createproducts(req, res, next) {
     getIO().emit('productCreated', product);
     return res
       .status(200)
-      .send({ msg: 'Product added successfully !', data: product });
+      .json({ msg: 'Product added successfully !', data: product });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server Error !' });
+    return res.status(500).json({ msg: 'server Error !' });
   }
 }
 
@@ -42,14 +42,14 @@ async function readProduct(req, res, next) {
   try {
     if (id) {
       let singleProduct = await productScema.findById(id).populate('category');
-      return res.send(singleProduct);
+      return res.json(singleProduct);
     } else {
       getallproducts = await productScema.find().populate('category');
-      return res.send(getallproducts);
+      return res.json(getallproducts);
     }
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server Error !' });
+    return res.status(500).json({ msg: 'server Error !' });
   }
 }
 
@@ -101,14 +101,14 @@ async function updateProducts(req, res, next) {
     );
 
     getIO().emit('productupdated', updateProduct);
-    return res.send({
+    return res.json({
       msg: 'Product update Successfully !',
       data: updateProduct,
     });
   } catch (error) {
     next(error);
     console.log(error);
-    return res.status(500).send({ msg: 'server Error !' });
+    return res.status(500).json({ msg: 'server Error !' });
   }
 }
 
@@ -117,7 +117,7 @@ async function DeleteProduct(req, res, next) {
   try {
     let Deleteproducts = await productScema.findOne({ _id: id });
     if (!Deleteproducts) {
-      return res.status(404).send({ msg: 'product not found !' });
+      return res.status(404).json({ msg: 'product not found !' });
     }
     await Deleteproducts.deleteOne();
     let Deletepromise = Deleteproducts.photo.map(async url => {
@@ -130,10 +130,10 @@ async function DeleteProduct(req, res, next) {
     });
     await Promise.all(Deletepromise);
     getIO().emit('productDeleted', id);
-    return res.send({ msg: 'Product delete successfully !', id });
+    return res.json({ msg: 'Product delete successfully !', id });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server Error !' });
+    return res.status(500).json({ msg: 'server Error !' });
   }
 }
 

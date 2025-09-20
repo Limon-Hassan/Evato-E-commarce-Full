@@ -9,7 +9,7 @@ async function addCategory(req, res, next) {
   let imageUrls =
     req.files && req.files.length > 0 ? req.files.map(file => file.path) : [];
   if (!name || !discription) {
-    return res.status(400).send({ msg: 'Please Enter all the fields !' });
+    return res.status(400).json({ msg: 'Please Enter all the fields !' });
   }
   try {
     let category = new categorySchema({
@@ -21,10 +21,10 @@ async function addCategory(req, res, next) {
     getIO().emit('categoryCreated', category);
     return res
       .status(200)
-      .send({ msg: 'category added successfully !', data: category });
+      .json({ msg: 'category added successfully !', data: category });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error' });
+    return res.status(500).json({ msg: 'server error' });
   }
 }
 
@@ -38,7 +38,7 @@ async function ReadCategory(req, res, next) {
       });
       let categoryObj = singleCategory.toObject();
       categoryObj.totalProducts = totalProducts;
-      return res.send(categoryObj);
+      return res.json(categoryObj);
     } else {
       let categories = await categorySchema.find();
       let categoriesWithCount = await Promise.all(
@@ -55,11 +55,11 @@ async function ReadCategory(req, res, next) {
           };
         })
       );
-      return res.send(categoriesWithCount);
+      return res.json(categoriesWithCount);
     }
   } catch (error) {
     next(error);
-    return res.send({ msg: 'Server Error' });
+    return res.json({ msg: 'Server Error' });
   }
 }
 
@@ -75,13 +75,13 @@ async function UpdateCategory(req, res, next) {
       { new: true }
     );
     getIO().emit('categoryUpdated', updateCategory);
-    return res.send({
+    return res.json({
       msg: 'Update Category successfully !',
       data: updateCategory,
     });
   } catch (error) {
     next(error);
-    res.status(500).send({ msg: 'server Error' });
+    res.status(500).json({ msg: 'server Error' });
   }
 }
 
@@ -90,7 +90,7 @@ async function DeleteCategory(req, res, next) {
   try {
     let DeleteCategory = await categorySchema.findOne({ _id: id });
     if (!DeleteCategory) {
-      return res.status(404).send({ msg: 'Category Not Found !' });
+      return res.status(404).json({ msg: 'Category Not Found !' });
     }
     await DeleteCategory.deleteOne();
 
@@ -104,10 +104,10 @@ async function DeleteCategory(req, res, next) {
     });
     await Promise.all(deletePromise);
     getIO().emit('categoryDeleted', id);
-    return res.send({ msg: 'category delete successfully !', id });
+    return res.json({ msg: 'category delete successfully !', id });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server Error' });
+    return res.status(500).json({ msg: 'server Error' });
   }
 }
 

@@ -21,7 +21,7 @@ async function makeReviews(req, res, next) {
       review: await reviews.populate('user', 'name'),
     });
 
-    res.status(200).send({ msg: 'review added successfully', data: reviews });
+    res.status(200).json({ msg: 'review added successfully', data: reviews });
   } catch (error) {
     next(error);
   }
@@ -35,9 +35,9 @@ async function getReviews(req, res, next) {
       'name'
     );
     if (GetReviews.length === 0) {
-      res.status(404).send({ msg: 'no reviews found' });
+      res.status(404).json({ msg: 'no reviews found' });
     }
-    res.send({ msg: 'reviews found', data: GetReviews });
+    res.json({ msg: 'reviews found', data: GetReviews });
   } catch (error) {
     next(error);
   }

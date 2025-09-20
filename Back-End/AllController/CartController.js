@@ -8,7 +8,7 @@ async function CreateCart(req, res, next) {
   try {
     let productExist = await productScema.findOne({ _id: product });
     if (!productExist) {
-      return res.status(404).send({ msg: 'product not found !' });
+      return res.status(404).json({ msg: 'product not found !' });
     }
     let existingCard = await CartSchema.findOne({
       user: user,
@@ -42,10 +42,10 @@ async function CreateCart(req, res, next) {
     getIO().to(user).emit('cartADD', Cart);
     return res
       .status(200)
-      .send({ msg: 'Product Added to Cart Successfully !', data: Cart });
+      .json({ msg: 'Product Added to Cart Successfully !', data: Cart });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error' });
+    return res.status(500).json({ msg: 'server error' });
   }
 }
 
@@ -57,7 +57,7 @@ async function readcart(req, res, next) {
       'name photo price '
     );
     if (Getcart.length === 0) {
-      return res.status(404).send({ msg: 'cart not found !' });
+      return res.status(404).json({ msg: 'cart not found !' });
     }
     let CartData = Getcart.map(item => ({
       CartitemID: item._id,
@@ -66,10 +66,10 @@ async function readcart(req, res, next) {
       quantity: item.quantity,
     }));
     getIO().to(id).emit('CartData', CartData);
-    return res.status(200).send(CartData);
+    return res.status(200).json(CartData);
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server Error!' });
+    return res.status(500).json({ msg: 'server Error!' });
   }
 }
 
@@ -78,7 +78,7 @@ async function CartSummery(req, res, next) {
   try {
     thisCartItem = await CartSchema.find({ user: id }).populate('product');
     if (!thisCartItem) {
-      return res.status(404).send({ msg: 'Cart not Found !' });
+      return res.status(404).json({ msg: 'Cart not Found !' });
     }
     let originalPrice = 0;
     let totalQuantity = 0;
@@ -102,10 +102,10 @@ async function CartSummery(req, res, next) {
       totalPrice,
     };
     getIO().to(id).emit('cartSummery', Cartsummery);
-    return res.status(200).send(Cartsummery);
+    return res.status(200).json(Cartsummery);
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error !' });
+    return res.status(500).json({ msg: 'server error !' });
   }
 }
 
@@ -119,24 +119,24 @@ async function IncreamentCart(req, res, next) {
     });
 
     if (!cartItem) {
-      return res.status(404).send({ msg: 'Cart item not found' });
+      return res.status(404).json({ msg: 'Cart item not found' });
     }
     if (action === 'Increment') {
       if (cartItem.quantity >= 20) {
-        return res.status(400).send({ msg: 'Max quantity of 20 reached' });
+        return res.status(400).json({ msg: 'Max quantity of 20 reached' });
       } else if (cartItem.quantity >= cartItem.product.stock) {
-        return res.status(400).send({ msg: 'Not enough stock available' });
+        return res.status(400).json({ msg: 'Not enough stock available' });
       } else {
         cartItem.quantity += 1;
       }
     } else if (action === 'Decrement') {
       if (cartItem.quantity <= 1)
-        return res.status(400).send({ msg: 'Quantity cannot go below 1' });
+        return res.status(400).json({ msg: 'Quantity cannot go below 1' });
       cartItem.quantity -= 1;
     } else {
       return res
         .status(400)
-        .send({ msg: 'Invalid action or quantity cannot go below 1' });
+        .json({ msg: 'Invalid action or quantity cannot go below 1' });
     }
     let productPrice = cartItem.product ? cartItem.product.price : 0;
     let quantity = cartItem.quantity || 1;
@@ -168,7 +168,7 @@ async function IncreamentCart(req, res, next) {
     });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error!' });
+    return res.status(500).json({ msg: 'server error!' });
   }
 }
 
@@ -179,23 +179,23 @@ async function DeleteCart(req, res, next) {
     if (action === 'single') {
       let deleteCart = await CartSchema.findById(id);
       if (!deleteCart) {
-        return res.status(404).send({ msg: 'cart not found !' });
+        return res.status(404).json({ msg: 'cart not found !' });
       }
       await deleteCart.deleteOne();
       getIO().to(deleteCart.user.toString()).emit('cartDeleted', id);
-      return res.status(200).send({ msg: 'cart delete Successfully !', id });
+      return res.status(200).json({ msg: 'cart delete Successfully !', id });
     } else if (action === 'clear') {
       let deleteManyCart = await CartSchema.deleteMany({ user: userid });
       getIO().to(userid).emit('CartDeleted', userid);
       return res
         .status(200)
-        .send({ msg: 'All cart delete Successfully !', deleteManyCart });
+        .json({ msg: 'All cart delete Successfully !', deleteManyCart });
     } else {
-      return res.status(400).send({ msg: 'Invaild Action' });
+      return res.status(400).json({ msg: 'Invaild Action' });
     }
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error!' });
+    return res.status(500).json({ msg: 'server error!' });
   }
 }
 module.exports = {

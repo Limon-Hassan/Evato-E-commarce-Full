@@ -6,7 +6,7 @@ async function createNotify(req, res, next) {
     const { user, message, type } = req.body;
 
     if (!user || !message) {
-      return res.status(400).send({ msg: 'User and message are required!' });
+      return res.status(400).json({ msg: 'User and message are required!' });
     }
 
     let newNotify = new Notification({ user, message, type });
@@ -20,10 +20,10 @@ async function createNotify(req, res, next) {
       createdAt: newNotify.createdAt,
     });
 
-    res.status(201).send({ msg: 'Notification created', data: newNotify });
+    res.status(201).json({ msg: 'Notification created', data: newNotify });
   } catch (error) {
     next(error);
-    res.status(500).send({ msg: 'Server error!' });
+    res.status(500).json({ msg: 'Server error!' });
   }
 }
 
@@ -33,10 +33,10 @@ async function getNotify(req, res, next) {
     let notifications = await Notification.find({ user: userId }).sort({
       createdAt: -1,
     });
-    res.status(200).send(notifications);
+    res.status(200).json(notifications);
   } catch (error) {
     next(error);
-    res.status(500).send({ msg: 'Server error!' });
+    res.status(500).json({ msg: 'Server error!' });
   }
 }
 
@@ -49,12 +49,12 @@ async function ReadNotify(req, res) {
       { new: true }
     );
 
-    if (!notify) return res.status(404).send({ msg: 'Notification not found' });
+    if (!notify) return res.status(404).json({ msg: 'Notification not found' });
 
-    res.status(200).send({ msg: 'Notification marked as read', data: notify });
+    res.status(200).json({ msg: 'Notification marked as read', data: notify });
   } catch (error) {
     next(error);
-    res.status(500).send({ msg: 'Server error!' });
+    res.status(500).json({ msg: 'Server error!' });
   }
 }
 

@@ -19,7 +19,7 @@ async function checkout(req, res, next) {
   try {
     let Cartitems = await CartSchema.find({ user: id }).populate('product');
     if (!Cartitems) {
-      return res.status(404).send({ msg: 'cart not found!' });
+      return res.status(404).json({ msg: 'cart not found!' });
     }
     let OrginalPrice = 0;
     let additionalFees = 0;
@@ -76,10 +76,10 @@ async function checkout(req, res, next) {
     sendEmailer(email, 'orderConfirmed', { name: name, orderID: orderID });
     return res
       .status(200)
-      .send({ msg: 'order placed successfully !', order: newOder });
+      .json({ msg: 'order placed successfully !', order: newOder });
   } catch (error) {
     next(error);
-    return res.status(500).send({ msg: 'server error!', error: error.message });
+    return res.status(500).json({ msg: 'server error!', error: error.message });
   }
 }
 
@@ -94,22 +94,22 @@ async function ReadCheckout(req, res, next) {
       );
       return res
         .status(200)
-        .send({ msg: 'single cart found !', data: singleOder });
+        .json({ msg: 'single cart found !', data: singleOder });
     } else {
       let checkout = await CheckoutSchema.find({ user: id }).populate(
         ' cartitem.product'
       );
       if (!checkout) {
-        return res.status(404).send({ msg: 'checkout not found !' });
+        return res.status(404).json({ msg: 'checkout not found !' });
       } else {
-        return res.send({ msg: 'all product found !', data: checkout });
+        return res.json({ msg: 'all product found !', data: checkout });
       }
     }
   } catch (error) {
     next(error);
     return res
       .status(500)
-      .send({ msg: 'server error !', error: error.message });
+      .json({ msg: 'server error !', error: error.message });
   }
 }
 
@@ -117,9 +117,9 @@ async function AdminReadCheckout(req, res, next) {
   try {
     let allCheckout = await CheckoutSchema.find({});
     if (!allCheckout) {
-      return res.status(404).send({ msg: 'checkout not found !' });
+      return res.status(404).json({ msg: 'checkout not found !' });
     } else {
-      return res.send({
+      return res.json({
         msg: 'all product found successfully !',
         data: allCheckout,
       });
@@ -128,7 +128,7 @@ async function AdminReadCheckout(req, res, next) {
     next(error);
     return res
       .status(500)
-      .send({ msg: 'server error !', error: error.message });
+      .json({ msg: 'server error !', error: error.message });
   }
 }
 
@@ -151,7 +151,7 @@ async function updateCheckout(req, res, next) {
     } else if (userRoll.user.Roll === 'user' && action === 'return') {
       userRoll.delivery = 'return_requested';
     } else {
-      return res.status(400).send({ msg: 'invaild action for this user !' });
+      return res.status(400).json({ msg: 'invaild action for this user !' });
     }
     await userRoll.save();
     getIO()
@@ -167,7 +167,7 @@ async function updateCheckout(req, res, next) {
     next(error);
     return res
       .status(500)
-      .send({ msg: 'server error !', error: error.message });
+      .json({ msg: 'server error !', error: error.message });
   }
 }
 
@@ -192,7 +192,7 @@ async function AdminDecision(req, res, next) {
       } else if (action === 'reject') {
         adminWork.delivery = 'cancelation_rejected';
       } else {
-        return res.status(400).send({ msg: 'invaild action for admin !' });
+        return res.status(400).json({ msg: 'invaild action for admin !' });
       }
     } else if (
       adminID === 'admin' &&
@@ -208,7 +208,7 @@ async function AdminDecision(req, res, next) {
         adminWork.delivery = 'return_rejected';
       }
     } else {
-      return res.status(400).send({ msg: 'you are not admin !' });
+      return res.status(400).json({ msg: 'you are not admin !' });
     }
 
     await adminWork.save();
@@ -221,12 +221,12 @@ async function AdminDecision(req, res, next) {
       });
     return res
       .status(200)
-      .send({ msg: 'order status updated !', data: adminWork });
+      .json({ msg: 'order status updated !', data: adminWork });
   } catch (error) {
     next(error);
     return res
       .status(500)
-      .send({ msg: 'server error !', error: error.message });
+      .json({ msg: 'server error !', error: error.message });
   }
 }
 

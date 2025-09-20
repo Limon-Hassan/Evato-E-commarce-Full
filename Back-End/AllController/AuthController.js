@@ -8,11 +8,11 @@ async function registation(req, res, next) {
   let { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    res.status(400).send('Please Enter all the fields !');
+    res.status(400).json('Please Enter all the fields !');
   }
   let existingUser = await userSchema.findOne({ email });
   if (existingUser) {
-    res.send({ msg: 'Email Already Exists !' });
+    res.status(400).json({ msg: 'Email Already Exists !' });
   }
 
   try {
@@ -40,11 +40,11 @@ async function registation(req, res, next) {
 
       res
         .status(201)
-        .send({ msg: 'User Registation succesfull !', data: Users });
+        .json({ msg: 'User Registation succesfull !', data: Users });
     });
   } catch (error) {
     next(error);
-    res.status(500).send({ msg: 'Internal server Error !' });
+    res.status(500).json({ msg: 'Internal server Error !' });
   }
 }
 
@@ -52,11 +52,11 @@ async function Adminregistation(req, res, next) {
   let { name, email, password, Roll } = req.body;
 
   if (!name || !email || !password || !Roll) {
-    res.status(400).send('Please Enter all the fields !');
+    res.status(400).json('Please Enter all the fields !');
   }
   let existingUser = await userSchema.findOne({ email });
   if (existingUser) {
-    res.send({ msg: 'Email Already Exists !' });
+    res.status(400).json({ msg: 'Email Already Exists !' });
   }
   try {
     bcrypt.hash(password, 10, async function (err, hash) {
@@ -83,11 +83,11 @@ async function Adminregistation(req, res, next) {
       sendEmailer(email, 'otp', { name: name, otp: Otp });
       res
         .status(201)
-        .send({ msg: 'Admin Registation succesfull !', data: Users });
+        .json({ msg: 'Admin Registation succesfull !', data: Users });
     });
   } catch (error) {
     next(error);
-    res.status(500).send({ msg: 'Internal server Error !' });
+    res.status(500).json({ msg: 'Internal server Error !' });
   }
 }
 
@@ -96,7 +96,7 @@ async function login(req, res, next) {
   try {
     let existingUser = await userSchema.findOne({ email });
     if (existingUser.isVerify === false) {
-      return res.status(400).send({ msg: 'Please verify your email!' });
+      return res.status(400).json({ msg: 'Please verify your email!' });
     }
     if (existingUser) {
       bcrypt.compare(password, existingUser.password, function (err, result) {
@@ -120,7 +120,7 @@ async function login(req, res, next) {
             }
           );
 
-          return res.status(200).send({
+          return res.status(200).json({
             token: token,
             msg:
               existingUser.Roll === 'admin'
@@ -130,11 +130,11 @@ async function login(req, res, next) {
             userId: existingUser._id,
           });
         } else {
-          return res.status(404).send({ msg: 'Invaild Password !' });
+          return res.status(404).json({ msg: 'Invaild Password !' });
         }
       });
     } else {
-      return res.send('ai email a kono user nai');
+      return res.json('ai email a kono user nai');
     }
   } catch (error) {
     next(error);
@@ -146,7 +146,7 @@ async function googleLogin(req, res, next) {
     const user = req.user;
 
     if (!user) {
-      return res.status(400).send({ msg: 'Google login failed!' });
+      return res.status(400).json({ msg: 'Google login failed!' });
     }
 
     const payload = {
@@ -169,7 +169,7 @@ async function googleLogin(req, res, next) {
     res.redirect('http://localhost:5173');
   } catch (err) {
     next(err);
-    return res.send({ msg: 'server error !', error: err.message });
+    return res.json({ msg: 'server error !', error: err.message });
   }
 }
 
@@ -178,48 +178,52 @@ async function alluser(req, res) {
     userInfo = await userSchema
       .findOne({ _id: req.user.id })
       .select('-password');
-    res.send({ user: userInfo });
+    res.json({ user: userInfo });
   } else {
     return res
       .status(401)
-      .send({ msg: 'Token expired or invalid. Please log in again.' });
+      .json({ msg: 'Token expired or invalid. Please log in again.' });
   }
 }
+
 async function adminUsers(req, res, next) {
   try {
     if (req.user.Role === 'admin') {
       let users = await userSchema.find({ Roll: 'user' }).select('-password');
 
-      return res.send(users);
+      return res.json(users);
     } else {
       return res
         .status(401)
-        .send({ msg: 'Unauthorized: Only admin can access this.' });
+        .json({ msg: 'Unauthorized: Only admin can access this.' });
     }
   } catch (err) {
     next(err);
-    return res.status(500).send({ msg: 'Server error' });
+    return res.status(500).json({ msg: 'Server error' });
   }
 }
+
+
 async function otpVerify(req, res) {
   let { email, OTP } = req.body;
   let verify = await userSchema.findOne({ email });
   if (!verify) {
-    return res.status(404).send('User not found!');
+    return res.status(404).json('User not found!');
   }
   if (verify.otp === OTP) {
     verify.isVerify = true;
     await verify.save();
-    return res.send({ msg: 'Email verfiy succesfull !' });
+    return res.json({ msg: 'Email verfiy succesfull !' });
   } else {
-    return res.send({ msg: 'Invaild Otp ! please resent it ' });
+    return res.json({ msg: 'Invaild Otp ! please resent it ' });
   }
 }
+
 async function resntOTP(req, res) {
   let { email } = req.body;
   let Again_mail = await userSchema.findOne({ email });
   if (!Again_mail) {
-    return res.status(404).send({ msg: 'User not found!' });
+    return res.status(404).json({ msg: 'User not found!' });
   }
   let Otp = `${Math.floor(1000 + Math.random() * 9000)}`;
   let otpsent = await userSchema.updateOne(
@@ -235,7 +239,7 @@ async function resntOTP(req, res) {
     );
   }, 60000);
   sendEmailer(email, 'otp', { name: Again_mail.name, otp: Otp });
-  return res.send({ msg: 'otp resent successfull' });
+  return res.json({ msg: 'otp resent successfull' });
 }
 
 module.exports = {

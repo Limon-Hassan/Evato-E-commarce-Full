@@ -16,10 +16,8 @@ const SentOTP = () => {
 
     if (e.key === 'Delete' || e.key === 'Backspace') {
       if (inputsRef.current[index].value) {
-        // Clear current value first
         inputsRef.current[index].value = '';
       } else if (index > 0) {
-        // If already empty, move to previous
         inputsRef.current[index - 1].value = '';
         inputsRef.current[index - 1].focus();
       }
