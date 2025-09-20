@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Container from '../Container';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import api from '../Api/axios';
 
 const Registration = () => {
@@ -15,9 +16,11 @@ const Registration = () => {
   let [loading, setLoading] = useState(false);
   let { enqueueSnackbar } = useSnackbar();
   let navigate = useNavigate();
+  const dispatch = useDispatch();
 
   let handleInputs = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError('');
   };
   let handleSubmit = async e => {
     e.preventDefault();
@@ -25,25 +28,35 @@ const Registration = () => {
     setLoading(true);
     if (!formData.name || !formData.email || !formData.password) {
       enqueueSnackbar('please fill all the fields', { variant: 'error' });
+      setLoading(false);
       return;
     }
     try {
-      let respons = await api.post('user/registation', formData);
-      if (respons.data.msg === 'User Registation succesfull !') {
+      let response = await api.post('user/registation', formData);
+      if (response.data.msg === 'User Registation succesfull !') {
+        let { name, email, Roll } = response.data.data;
+        let safeUser = { name, email, Roll };
+        localStorage.setItem('auth-user', JSON.stringify(safeUser));
+        dispatch({
+          type: 'SET_USER',
+          payload: { user: safeUser, token: null },
+        });
         setTimeout(() => {
           navigate('/Send_OTP');
+          setLoading(false);
         }, [2000]);
       } else {
-        enqueueSnackbar(respons.data.msg, { variant: 'warning' });
+        enqueueSnackbar(response.data.msg, { variant: 'warning' });
       }
     } catch (error) {
       let backendMsg = error.response?.data?.msg || 'Something went wrong!';
       enqueueSnackbar(backendMsg, { variant: 'error' });
       setError(backendMsg);
-    } finally {
       setLoading(false);
     }
   };
+
+
 
   return (
     <>
@@ -117,12 +130,7 @@ const Registration = () => {
               >
                 {loading ? 'Creating Account...' : 'Register Account'}
               </button>
-              <button className="text-[16px] w-[500px] font-bold font-display text-[#fff] bg-[#629D23] px-[25px] py-[14px] rounded-[6px] mb-[30px] cursor-pointer">
-                Register with
-                <span className="ml-[12px]">
-                  <i class="fa-brands fa-google"></i> Google
-                </span>
-              </button>
+             
               <p className="text-[16px] font-display font-normal text-[#6E777D]">
                 Already Have an Account ?
                 <Link

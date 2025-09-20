@@ -1,7 +1,52 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Container from '../Container';
+import { useState } from 'react';
+import { useSnackbar } from 'notistack';
+import api from '../Api/axios';
 
 const Login = () => {
+  let [loginFormData, setLoginFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  let [showPassword, setShowPassword] = useState(false);
+  let [loading, setLoading] = useState(false);
+  let { enqueueSnackbar } = useSnackbar();
+  let navigate = useNavigate();
+
+  let handleInputs = e => {
+    setLoginFormData({ ...loginFormData, [e.target.name]: e.target.value });
+  };
+
+  let handleSubmit = async e => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      let response = await api.post('user/login', loginFormData, {
+        withCredentials: true,
+      });
+      if (response.data.msg === 'User Login Sucessfull !') {
+        let { token, userId } = response.data;
+        let safeUser = { token, userId };
+        console.log(response.data);
+        localStorage.setItem('auth-Info', JSON.stringify(safeUser));
+        setTimeout(() => {
+          navigate('/');
+          setLoading(false);
+        }, [2000]);
+      } else {
+        enqueueSnackbar(response.data.msg, { variant: 'warning' });
+      }
+    } catch (error) {
+      let backendMsg = error.response?.data?.msg || 'Something went wrong!';
+      enqueueSnackbar(backendMsg, { variant: 'error' });
+      setLoading(false);
+    }
+  };
+  // const handleGoogleLogin = async () => {
+  //   window.location.href = await api.get('user/google');
+  // };
   return (
     <>
       <section className="bg-[#F3F4F6] py-[60px]">
@@ -17,25 +62,48 @@ const Login = () => {
                   Email*
                 </label>
                 <input
+                  onChange={handleInputs}
                   className="border mt-[10px] border-[#ebebeb] rounded-[5px] w-full h-full text-[16px] font-display font-normal leading-7 bg-transparent px-[15px] outline-none focus:border-[#629D23] transition-all ease-in-out duration-500"
-                  type="text"
+                  type="email"
                   id="email"
+                  value={loginFormData.email}
                   name="email"
                 />
               </div>
-              <div className="input-wapper w-[500px] h-[50px] text-left mb-[60px]">
+              <div className="input-wapper relative w-[500px] h-[50px] text-left mb-[60px]">
                 <label className=" font-medium text-[#2C3C28]" for="password">
                   Password*
                 </label>
                 <input
+                  onChange={handleInputs}
                   className="border mt-[10px] border-[#ebebeb] rounded-[5px] w-full h-full text-[16px] font-display font-normal leading-7 bg-transparent px-[15px] outline-none focus:border-[#629D23] transition-all ease-in-out duration-500"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
+                  value={loginFormData.password}
                   name="password"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute top-[45px] right-[10px] flex items-center text-lg text-black cursor-pointer"
+                >
+                  {showPassword ? (
+                    <span>
+                      <i class="fa-light fa-eye"></i>
+                    </span>
+                  ) : (
+                    <span>
+                      <i class="fa-light fa-eye-slash"></i>
+                    </span>
+                  )}
+                </button>
               </div>
-              <button className="text-[16px] w-[500px] font-bold font-display text-[#fff] bg-[#629D23] px-[25px] py-[14px] rounded-[6px] mb-[30px] cursor-pointer">
-                Login Account
+              <button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="text-[16px] w-[500px] font-bold font-display text-[#fff] bg-[#629D23] px-[25px] py-[14px] rounded-[6px] mb-[30px] cursor-pointer"
+              >
+                {loading ? 'Logged In...' : 'Login Account'}
               </button>
               <button className="text-[16px] w-[500px] font-bold font-display text-[#fff] bg-[#629D23] px-[25px] py-[14px] rounded-[6px] mb-[30px] cursor-pointer">
                 Login with

@@ -114,8 +114,8 @@ async function login(req, res, next) {
             token,
             {
               httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              sameSite: 'strict',
+              secure: false,
+              sameSite: 'lax',
               maxAge: 60 * 60 * 1000,
             }
           );
@@ -202,7 +202,6 @@ async function adminUsers(req, res, next) {
     return res.status(500).json({ msg: 'Server error' });
   }
 }
-
 
 async function otpVerify(req, res) {
   let { email, OTP } = req.body;

@@ -1,10 +1,29 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Container from '../Container';
+import { useNavigate } from 'react-router-dom';
+import api from '../Api/axios';
+import { useSnackbar } from 'notistack';
 
 const SentOTP = () => {
-  const inputsRef = useRef([]);
+  let inputsRef = useRef([]);
+  let navigate = useNavigate();
+  let { enqueueSnackbar } = useSnackbar();
+  let [counter, setCounter] = useState(60);
+  let [canResend, setCanResend] = useState(false);
 
-  const handleKeyDown = (e, index) => {
+  useEffect(() => {
+    let timer;
+    if (!canResend && counter > 0) {
+      timer = setInterval(() => {
+        setCounter(prev => prev - 1);
+      }, 1000);
+    } else if (counter === 0) {
+      setCanResend(true);
+    }
+    return () => clearInterval(timer);
+  }, [counter, canResend]);
+
+  let handleKeyDown = (e, index) => {
     if (
       !/^[0-9]{1}$/.test(e.key) &&
       e.key !== 'Backspace' &&
@@ -44,12 +63,40 @@ const SentOTP = () => {
     inputsRef.current[inputsRef.current.length - 1].focus();
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    const otp = inputsRef.current.map(input => input.value).join('');
-    console.log('Entered OTP:', otp);
+    const OTP = inputsRef.current.map(input => input.value).join('');
+    const user = JSON.parse(localStorage.getItem('auth-user'));
+    const email = user?.email;
+    try {
+      let response = await api.post('user/otp-verify', { email, OTP });
+      if (response.data.msg === 'Email verfiy succesfull !') {
+        setTimeout(() => {
+          navigate('/login');
+        }, [1000]);
+      } else {
+        enqueueSnackbar(response.data.msg, { variant: 'warning' });
+      }
+    } catch (error) {
+      let backendMsg = error.response?.data?.msg || 'Something went wrong!';
+      enqueueSnackbar(backendMsg, { variant: 'error' });
+    }
   };
+  let handleResent = async () => {
+    let user = JSON.parse(localStorage.getItem('auth-user'));
+    let email = user?.email;
+    try {
+      let response = await api.post('user/resent-otp', { email });
+      enqueueSnackbar(response.data.msg, { variant: 'success' });
 
+      setCounter(60);
+      setCanResend(false);
+    } catch (error) {
+      enqueueSnackbar(error.response?.data?.msg || 'Something went wrong!', {
+        variant: 'error',
+      });
+    }
+  };
   return (
     <section className="py-[100px]">
       <Container>
@@ -95,12 +142,17 @@ const SentOTP = () => {
           </form>
           <div className="text-sm text-slate-500 mt-4">
             Didn&apos;t receive code?
-            <a
-              className="font-medium text-indigo-500 hover:text-indigo-600"
-              href="#0"
+            <button
+              onClick={handleResent}
+              disabled={!canResend}
+              className={`font-medium ${
+                canResend
+                  ? ' text-indigo-600 cursor-pointer'
+                  : ' text-gray-600 cursor-not-allowed'
+              } ml-[8px] `}
             >
-              Resend
-            </a>
+              {canResend ? 'Resend OTP' : `Resend in ${counter}s`}
+            </button>
           </div>
         </div>
       </Container>
