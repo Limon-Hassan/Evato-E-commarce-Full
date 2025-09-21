@@ -143,12 +143,17 @@ async function login(req, res, next) {
 
 async function googleLogin(req, res, next) {
   try {
-    const user = req.user;
+    const { email, name } = req.user;
 
+    let user = await userSchema.findOne({ email });
     if (!user) {
-      return res.status(400).json({ msg: 'Google login failed!' });
+      user = await userSchema.create({
+        name,
+        email,
+        password: null,
+        Roll: 'user',
+      });
     }
-
     const payload = {
       id: user._id,
       email: user.email,

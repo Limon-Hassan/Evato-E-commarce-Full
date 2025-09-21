@@ -10,24 +10,23 @@ function GoogleRedirect() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await api.get('user/me', {
+        const response = await api.get('user/me', {
           withCredentials: true,
         });
-        console.log('Cookies received:', req.cookies);
-        console.log(res);
-        // if (res.data.user) {
-        //   console.log(res.data);
-        //   localStorage.setItem(
-        //     'auth-Info',
-        //     JSON.stringify({ user: res.data.user })
-        //   );
-        //   navigate('/');
-        // } else {
-        //   navigate('/login');
-        // }
+       
+        if (response.data.user) {
+          localStorage.setItem(
+            'auth-Info',
+            JSON.stringify({ user: response.data.user })
+          );
+          navigate('/');
+        } else {
+          navigate('/login');
+        }
       } catch (error) {
         console.log(error);
-        let backendMsg = error.res?.data?.message || 'Something went wrong!';
+        let backendMsg =
+          error.response?.data?.message || 'Something went wrong!';
         enqueueSnackbar(backendMsg, { variant: 'error' });
         navigate('/login');
       }
@@ -36,7 +35,11 @@ function GoogleRedirect() {
     fetchUser();
   }, [navigate]);
 
-  return <div>Logging in with Google...</div>;
+  return (
+    <div className="py-[200px] text-black font-display font-bold text-[30px] flex justify-center items-center">
+      Logging in with Google...
+    </div>
+  );
 }
 
 export default GoogleRedirect;
