@@ -44,9 +44,7 @@ const Login = () => {
       setLoading(false);
     }
   };
-  // const handleGoogleLogin = async () => {
-  //   window.location.href = await api.get('user/google');
-  // };
+
   return (
     <>
       <section className="bg-[#F3F4F6] py-[60px]">
@@ -105,7 +103,13 @@ const Login = () => {
               >
                 {loading ? 'Logged In...' : 'Login Account'}
               </button>
-              <button className="text-[16px] w-[500px] font-bold font-display text-[#fff] bg-[#629D23] px-[25px] py-[14px] rounded-[6px] mb-[30px] cursor-pointer">
+              <button
+                onClick={
+                  (window.location.href =
+                    'https://evato-e-commerce.onrender.com/api/v2/user/google')
+                }
+                className="text-[16px] w-[500px] font-bold font-display text-[#fff] bg-[#629D23] px-[25px] py-[14px] rounded-[6px] mb-[30px] cursor-pointer"
+              >
                 Login with
                 <span className="ml-[12px]">
                   <i class="fa-brands fa-google"></i> Google

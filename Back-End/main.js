@@ -2,6 +2,8 @@ let express = require('express');
 require('dotenv').config();
 var cookieParser = require('cookie-parser');
 const router = require('./Router/main');
+const passport = require('passport');
+require('./Config/passport');
 const dbConnection = require('./Config/dbconfig');
 const { ErrorCheck } = require('./Halper/ErrorCheck');
 let http = require('http');
@@ -11,6 +13,7 @@ const { init: initSocket } = require('./socket_server');
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(passport.initialize());
 app.use(
   cors({
     origin: 'http://localhost:5173',
