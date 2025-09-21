@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../Api/axios';
+import { useSnackbar } from 'notistack';
 
 function GoogleRedirect() {
   const navigate = useNavigate();
+  let { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     async function fetchUser() {
@@ -23,8 +25,10 @@ function GoogleRedirect() {
         // } else {
         //   navigate('/login');
         // }
-      } catch (err) {
-        console.log('Error fetching user', err);
+      } catch (error) {
+        console.log(error);
+        let backendMsg = error.res?.data?.message || 'Something went wrong!';
+        enqueueSnackbar(backendMsg, { variant: 'error' });
         navigate('/login');
       }
     }
