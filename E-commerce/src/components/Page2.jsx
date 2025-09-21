@@ -16,7 +16,6 @@ const Page2 = () => {
     async function FetchCategory() {
       try {
         let response = await api.get('category/getCategory');
-        console.log(response.data);
         setCategory(response.data);
       } catch (error) {
         console.error(error);
