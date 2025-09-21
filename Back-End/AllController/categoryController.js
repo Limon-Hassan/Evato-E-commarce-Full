@@ -29,7 +29,7 @@ async function addCategory(req, res, next) {
 }
 
 async function ReadCategory(req, res, next) {
-  let id = req.query;
+  let { id } = req.query;
   try {
     if (id) {
       let singleCategory = await categorySchema.findById(id);
@@ -38,7 +38,7 @@ async function ReadCategory(req, res, next) {
       });
       let categoryObj = singleCategory.toObject();
       categoryObj.totalProducts = totalProducts;
-      return res.json(categoryObj);
+      return res.json([categoryObj]);
     } else {
       let categories = await categorySchema.find();
       let categoriesWithCount = await Promise.all(

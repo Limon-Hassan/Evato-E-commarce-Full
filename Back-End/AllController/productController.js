@@ -38,7 +38,7 @@ async function Createproducts(req, res, next) {
 }
 
 async function readProduct(req, res, next) {
-  let id = req.query;
+  let { id } = req.query;
   try {
     if (id) {
       let singleProduct = await productScema.findById(id).populate('category');

@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import api from '../Api/axios';
 
 const Page2 = () => {
-  let [category, setCategory] = useState();
+  let [category, setCategory] = useState([]);
 
   useEffect(() => {
     async function FetchCategory() {

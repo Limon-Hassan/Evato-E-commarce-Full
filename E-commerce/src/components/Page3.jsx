@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Container from '../Container';
 import Page4 from './Page4';
 
 const Page3 = () => {
+  let [products, setProducts] = useState();
   return (
     <>
       <section className="bg-[#dbe2e9]/30 pt-[60px]">
