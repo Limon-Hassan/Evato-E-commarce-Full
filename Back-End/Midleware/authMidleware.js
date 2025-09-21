@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 function authMidleware(req, res, next) {
-  console.log('Cookies received:', req.cookies);
   let token = req.cookies.userToken;
   if (!token) {
     return res.status(401).json({ message: 'No token found. Please login.' });
