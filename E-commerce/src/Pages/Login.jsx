@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Container from '../Container';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import api from '../Api/axios';
 
@@ -44,6 +44,8 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  
 
   return (
     <>
@@ -104,10 +106,10 @@ const Login = () => {
                 {loading ? 'Logged In...' : 'Login Account'}
               </button>
               <button
-                onClick={
-                  (window.location.href =
-                    'https://evato-e-commerce.onrender.com/api/v2/user/google')
-                }
+                onClick={() => {
+                  window.location.href =
+                    'https://evato-e-commerce.onrender.com/api/v2/user/google';
+                }}
                 className="text-[16px] w-[500px] font-bold font-display text-[#fff] bg-[#629D23] px-[25px] py-[14px] rounded-[6px] mb-[30px] cursor-pointer"
               >
                 Login with

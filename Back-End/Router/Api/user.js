@@ -10,6 +10,7 @@ const {
   otpVerify,
   resntOTP,
   googleLogin,
+  getCurrentUser,
 } = require('../../AllController/AuthController');
 const authMidleware = require('../../Midleware/authMidleware');
 const AdminMidleware = require('../../Midleware/AdminMidleware');
@@ -20,6 +21,7 @@ router.post('/Adminregistation', Adminregistation);
 router.post('/login', ErrorCheck, login);
 router.post('/otp-verify', otpVerify);
 router.post('/resent-otp', resntOTP);
+router.get('/me', authMidleware, getCurrentUser);
 router.get('/users', authMidleware, alluser);
 router.get('/adminusers', AdminMidleware, adminUsers);
 router.get(

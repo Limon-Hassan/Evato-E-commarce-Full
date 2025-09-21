@@ -31,6 +31,7 @@ function Layout() {
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/google/success" element={<GoogleRedirect />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/account" element={<Account />} />
         <Route path="/cart" element={<Cart />} />

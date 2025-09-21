@@ -161,12 +161,12 @@ async function googleLogin(req, res, next) {
 
     res.cookie('userToken', token, {
       httpOnly: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      secure: false,
       maxAge: 60 * 60 * 1000,
     });
 
-    res.redirect('http://localhost:5173');
+    res.redirect('http://localhost:5173/google/success');
   } catch (err) {
     next(err);
     return res.json({ msg: 'server error !', error: err.message });
@@ -241,6 +241,17 @@ async function resntOTP(req, res) {
   return res.json({ msg: 'otp resent successfull' });
 }
 
+const getCurrentUser = (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ msg: 'Not logged in' });
+    }
+    res.json({ user: req.user });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error', error: err.message });
+  }
+};
+
 module.exports = {
   registation,
   Adminregistation,
@@ -250,4 +261,5 @@ module.exports = {
   otpVerify,
   googleLogin,
   resntOTP,
+  getCurrentUser,
 };
