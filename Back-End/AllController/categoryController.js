@@ -29,7 +29,7 @@ async function addCategory(req, res, next) {
 }
 
 async function ReadCategory(req, res, next) {
-  let { id } = req.params;
+  let id = req.query;
   try {
     if (id) {
       let singleCategory = await categorySchema.findById(id);

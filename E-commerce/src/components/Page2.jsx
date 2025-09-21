@@ -6,8 +6,26 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/scrollbar';
 import Container from '../Container';
+import { useEffect, useState } from 'react';
+import api from '../Api/axios';
 
 const Page2 = () => {
+  let [category, setCategory] = useState();
+
+  useEffect(() => {
+    async function FetchCategory() {
+      try {
+        let response = await api.get('category/getCategory');
+        console.log(response.data);
+        setCategory(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    FetchCategory();
+  }, []);
+
   return (
     <>
       <section className="bg-[#dbe2e9]/30 pt-[60px] pb-[60px]">
@@ -39,141 +57,25 @@ const Page2 = () => {
                   prevEl: '.swiper-button-prev-custom',
                 }}
               >
-                <SwiperSlide>
-                  <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                    <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                      <img
-                        className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="ww05.jpg"
-                        alt="Organic Vegetable"
-                      />
-                      <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                        Organic Vegetable
-                      </h3>
-                      <p className="text-[#629D23] text-center">299 ITEMS</p>
+                {category?.map(cat => (
+                  <SwiperSlide key={cat._id}>
+                    <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
+                      <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
+                        <img
+                          className="max-w-[80px] max-h-[80px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
+                          src={cat.image || 'ww05.jpg'}
+                          alt="Organic Vegetable"
+                        />
+                        <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
+                          {cat.name}
+                        </h3>
+                        <p className="text-[#629D23] text-center">
+                          {cat.totalProducts} ITEMS
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                    <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                      <img
-                        className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="11107.jpg"
-                        alt="Organic Vegetable"
-                      />
-                      <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                        Organic Vegetable
-                      </h3>
-                      <p className="text-[#629D23] text-center">299 ITEMS</p>
-                    </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                    <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                      <img
-                        className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="22206.jpg"
-                        alt="Organic Vegetable"
-                      />
-                      <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                        Organic Vegetable
-                      </h3>
-                      <p className="text-[#629D23] text-center">299 ITEMS</p>
-                    </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                    <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                      <img
-                        className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="0444.jpg"
-                        alt="Organic Vegetable"
-                      />
-                      <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                        Organic Vegetable
-                      </h3>
-                      <p className="text-[#629D23] text-center">299 ITEMS</p>
-                    </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                    <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                      <img
-                        className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="0001.jpg"
-                        alt="Organic Vegetable"
-                      />
-                      <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                        Organic Vegetable
-                      </h3>
-                      <p className="text-[#629D23] text-center">299 ITEMS</p>
-                    </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className=" w-[187px] h-[180px] bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                    <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                      <img
-                        className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="2208.jpg"
-                        alt="Organic Vegetable"
-                      />
-                      <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                        Organic Vegetable
-                      </h3>
-                      <p className="text-[#629D23] text-center">299 ITEMS</p>
-                    </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                    <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                      <img
-                        className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="2208.jpg"
-                        alt="Organic Vegetable"
-                      />
-                      <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                        Organic Vegetable
-                      </h3>
-                      <p className="text-[#629D23] text-center">299 ITEMS</p>
-                    </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                    <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                      <img
-                        className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="2208.jpg"
-                        alt="Organic Vegetable"
-                      />
-                      <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                        Organic Vegetable
-                      </h3>
-                      <p className="text-[#629D23] text-center">299 ITEMS</p>
-                    </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                    <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                      <img
-                        className="max-w-[70px] max-h-[94px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                        src="2208.jpg"
-                        alt="Organic Vegetable"
-                      />
-                      <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                        Organic Vegetable
-                      </h3>
-                      <p className="text-[#629D23] text-center">299 ITEMS</p>
-                    </div>
-                  </div>
-                </SwiperSlide>
+                  </SwiperSlide>
+                ))}
               </Swiper>
             </div>
           </div>
