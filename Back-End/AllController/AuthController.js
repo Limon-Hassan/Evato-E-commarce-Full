@@ -161,7 +161,7 @@ async function googleLogin(req, res, next) {
 
     res.cookie('userToken', token, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: false,
       maxAge: 60 * 60 * 1000,
     });

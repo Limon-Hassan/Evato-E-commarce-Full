@@ -11,15 +11,18 @@ function GoogleRedirect() {
         const res = await api.get('user/me', {
           withCredentials: true,
         });
-        if (res.data.user) {
-          localStorage.setItem(
-            'auth-Info',
-            JSON.stringify({ user: res.data.user })
-          );
-          navigate('/');
-        } else {
-          navigate('/login');
-        }
+        console.log('Cookies received:', req.cookies);
+        console.log(res);
+        // if (res.data.user) {
+        //   console.log(res.data);
+        //   localStorage.setItem(
+        //     'auth-Info',
+        //     JSON.stringify({ user: res.data.user })
+        //   );
+        //   navigate('/');
+        // } else {
+        //   navigate('/login');
+        // }
       } catch (err) {
         console.log('Error fetching user', err);
         navigate('/login');
