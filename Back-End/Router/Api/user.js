@@ -30,7 +30,10 @@ router.get(
 );
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', {
+    failureRedirect: '/login',
+    session: false,
+  }),
   googleLogin
 );
 module.exports = router;

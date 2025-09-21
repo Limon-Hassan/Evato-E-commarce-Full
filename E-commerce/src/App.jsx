@@ -16,6 +16,7 @@ import Page8 from './components/Page8';
 import Cart from './Pages/Cart';
 import Checkout from './Pages/Checkout';
 import SentOTP from './Pages/SentOTP';
+import GoogleRedirect from './Pages/GoogleRedirect';
 
 const stripePromise = loadStripe('pk_test_1234567890');
 

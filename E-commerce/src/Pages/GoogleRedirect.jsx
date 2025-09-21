@@ -18,11 +18,11 @@ function GoogleRedirect() {
           );
           navigate('/');
         } else {
-          navigate('/sign-in');
+          navigate('/login');
         }
       } catch (err) {
         console.log('Error fetching user', err);
-        navigate('/sign-in');
+        navigate('/login');
       }
     }
 
