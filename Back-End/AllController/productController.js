@@ -41,16 +41,18 @@ async function readProduct(req, res, next) {
   let { id } = req.query;
   try {
     if (id) {
-      let singleProduct = await productScema.findById(id).populate({
-        path: 'category',
-        populate: {
-          path: 'Product',
-          model: 'Product',
-        },
-        strictPopulate: false,
-      });
-      console.log(singleProduct);
-      return res.json(singleProduct);
+      const singleProduct = await productScema
+        .findById(id)
+        .populate('category');
+
+      const relatedProducts = await productScema
+        .find({
+          category: { $in: singleProduct.category },
+          _id: { $ne: id },
+        })
+        .limit(8);
+
+      return res.json({ product: singleProduct, relatedProducts });
     } else {
       getallproducts = await productScema.find().populate('category');
       return res.json(getallproducts);
