@@ -47,6 +47,7 @@ async function readProduct(req, res, next) {
           path: 'Product',
           model: 'Product',
         },
+        strictPopulate: false,
       });
       return res.json(singleProduct);
     } else {
