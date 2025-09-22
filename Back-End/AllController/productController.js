@@ -55,6 +55,8 @@ async function readProduct(req, res, next) {
     }
   } catch (error) {
     next(error);
+    console.log(error.message);
+    console.error(error);
     return res.status(500).json({ msg: 'server Error !', error });
   }
 }
