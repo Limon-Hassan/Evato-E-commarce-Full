@@ -44,8 +44,8 @@ async function readProduct(req, res, next) {
       let singleProduct = await productScema.findById(id).populate({
         path: 'category',
         populate: {
-          path: 'Products',
-          model: 'Products',
+          path: 'Product',
+          model: 'Product',
         },
       });
       return res.json(singleProduct);
