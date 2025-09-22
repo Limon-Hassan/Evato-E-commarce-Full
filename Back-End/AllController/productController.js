@@ -49,6 +49,7 @@ async function readProduct(req, res, next) {
         },
         strictPopulate: false,
       });
+      console.log(singleProduct);
       return res.json(singleProduct);
     } else {
       getallproducts = await productScema.find().populate('category');
