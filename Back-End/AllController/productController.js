@@ -44,8 +44,8 @@ async function readProduct(req, res, next) {
       let singleProduct = await productScema.findById(id).populate({
         path: 'category',
         populate: {
-          path: 'Product',
-          model: 'Product',
+          path: 'Products',
+          model: 'Products',
         },
       });
       return res.json(singleProduct);
@@ -57,7 +57,7 @@ async function readProduct(req, res, next) {
     next(error);
     console.log(error.message);
     console.error(error);
-    return res.status(500).json({ msg: 'server Error !', error });
+    return res.status(500).json({ msg: 'server Error !' });
   }
 }
 
