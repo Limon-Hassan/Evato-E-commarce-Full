@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '../Container';
 import { Link } from 'react-router-dom';
 const Navber = () => {
+  let [countCart, setCountCart] = useState(0);
+
+  useEffect(() => {
+    let updateCart = () => {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      setCountCart(cart.length);
+    };
+    updateCart();
+    window.addEventListener('storage', updateCart);
+    return () => {
+      window.removeEventListener('storage', updateCart);
+    };
+  }, []);
   return (
     <>
       <nav className="bg-white py-8">
@@ -59,12 +72,15 @@ const Navber = () => {
               </button>
               <Link
                 to="/Cart"
-                className="text-[18px] font-display font-medium border border-[#e2e2e2] rounded-[6px] bg-white hover:bg-[#2C3C28] transition-all ease-in-out duration-300 py-[12px] px-[28px] text-black hover:text-white  cursor-pointer"
+                className="relative text-[18px] font-display font-medium border border-[#e2e2e2] rounded-[6px] bg-white hover:bg-[#2C3C28] transition-all ease-in-out duration-300 py-[12px] px-[28px] text-black hover:text-white  cursor-pointer"
               >
                 <span className="mr-[8px]">
                   <i class="fa-light fa-cart-shopping"></i>
                 </span>
                 Cart
+                <span className="absolute top-[4px] right-[62px] bg-[#629D23] text-white rounded-full w-[24px] flex justify-center items-center h-[24px] text-sm ">
+                  {countCart}
+                </span>
               </Link>
             </div>
           </div>

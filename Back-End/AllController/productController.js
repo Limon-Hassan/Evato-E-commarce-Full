@@ -41,7 +41,13 @@ async function readProduct(req, res, next) {
   let { id } = req.query;
   try {
     if (id) {
-      let singleProduct = await productScema.findById(id).populate('category');
+      let singleProduct = await productScema.findById(id).populate({
+        path: 'category',
+        populate: {
+          path: 'Product',
+          model: 'Product',
+        },
+      });
       return res.json(singleProduct);
     } else {
       getallproducts = await productScema.find().populate('category');

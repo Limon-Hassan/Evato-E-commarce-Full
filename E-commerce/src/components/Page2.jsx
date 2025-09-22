@@ -8,9 +8,11 @@ import 'swiper/css/scrollbar';
 import Container from '../Container';
 import { useEffect, useState } from 'react';
 import api from '../Api/axios';
+import SkeletonCategory from './SkeletonCategory';
 
 const Page2 = () => {
   let [category, setCategory] = useState([]);
+  let [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function FetchCategory() {
@@ -19,6 +21,8 @@ const Page2 = () => {
         setCategory(response.data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -56,25 +60,31 @@ const Page2 = () => {
                   prevEl: '.swiper-button-prev-custom',
                 }}
               >
-                {category?.map(cat => (
-                  <SwiperSlide key={cat._id}>
-                    <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
-                      <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
-                        <img
-                          className="max-w-[80px] max-h-[80px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
-                          src={cat.image || 'ww05.jpg'}
-                          alt="Organic Vegetable"
-                        />
-                        <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
-                          {cat.name}
-                        </h3>
-                        <p className="text-[#629D23] text-center">
-                          {cat.totalProducts} ITEMS
-                        </p>
-                      </div>
-                    </div>
-                  </SwiperSlide>
-                ))}
+                {loading
+                  ? Array.from({ length: 8 }).map((_, idx) => (
+                      <SwiperSlide key={idx}>
+                        <SkeletonCategory />
+                      </SwiperSlide>
+                    ))
+                  : category?.map(cat => (
+                      <SwiperSlide key={cat._id}>
+                        <div className=" w-[187px] h-[180px]  bg-white border border-[#e2e2e2] hover:border-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] p-2 cursor-pointer">
+                          <div className=" w-full h-full bg-[#ededed]/30 rounded-[6px] ">
+                            <img
+                              className="max-w-[80px] max-h-[80px] min-h-[60px] mx-auto pt-[16px] mb-[16px]"
+                              src={cat.image || 'ww05.jpg'}
+                              alt="Organic Vegetable"
+                            />
+                            <h3 className="text-[16px] font-bold font-display text-[#2C3C28] text-center mb-[8px] ">
+                              {cat.name}
+                            </h3>
+                            <p className="text-[#629D23] text-center">
+                              {cat.totalProducts} ITEMS
+                            </p>
+                          </div>
+                        </div>
+                      </SwiperSlide>
+                    ))}
               </Swiper>
             </div>
           </div>
