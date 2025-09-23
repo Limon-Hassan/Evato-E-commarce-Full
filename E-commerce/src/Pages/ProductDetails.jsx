@@ -174,9 +174,7 @@ const ProductDetails = () => {
             <div className="mt-[20px] relative">
               {buttonActive.a && <ProductDetalisPart1 />}
               {buttonActive.b && <AddictionalDetail />}
-              {buttonActive.c && (
-                <CustomerReviews product={product.product.name} />
-              )}
+              {buttonActive.c && <CustomerReviews product={product.product} />}
             </div>
           </div>
 

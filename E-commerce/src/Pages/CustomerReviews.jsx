@@ -1,18 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '../Container';
+import api from '../Api/axios';
+import { useSnackbar } from 'notistack';
 
 const CustomerReviews = ({ product }) => {
   let [toggleShow, settoggleShow] = useState(false);
-  let [rating, setRating] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [Comment, setComment] = useState('');
+  const [hover, setHover] = useState(0);
+  let { enqueueSnackbar } = useSnackbar();
+
   let handleShow = () => {
     settoggleShow(true);
   };
-
-  let handleRating = e => {
-    setRating(e.target.value);
-    console.log('User rating:', e.target.value);
+  let handleComment = e => {
+    setComment(e.target.value);
   };
-
+  let peyload = {
+    productId: product._id,
+    rating: rating,
+    comment: Comment,
+  };
+  let handleCommentSubmit = async () => {
+    try {
+      let response = await api.post('product/CreateReviews', { peyload });
+      console.log(response);
+      setRating(0);
+      setComment('');
+      setHover(0);
+    } catch (error) {
+      console.error(error);
+      let backendMsg = error.response?.data?.msg || 'Something went wrong!';
+      enqueueSnackbar(backendMsg, { variant: 'error' });
+    } finally {
+      settoggleShow(false);
+    }
+  };
   return (
     <>
       <section className="bg-white py-8 antialiased  md:py-16">
@@ -514,7 +537,7 @@ const CustomerReviews = ({ product }) => {
                     Add a review for :
                   </h5>
                   <h4 className="text-[16px] font-display font-medium text-[#6E777D]">
-                    ({product})
+                    ({product.name})
                   </h4>
                 </div>
                 <span
@@ -525,127 +548,42 @@ const CustomerReviews = ({ product }) => {
                 </span>
               </div>
             </div>
-            <div
-              onChange={handleRating}
-              className="flex  justify-start items-center my-[20px]"
-            >
-              <>
-                <input
-                  id="hs-ratings-readonly-1"
-                  type="radio"
-                  className="peer -ms-5 size-7 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0"
-                  name="hs-ratings-readonly"
-                  value="1"
-                />
-                <label
-                  htmlFor="hs-ratings-readonly-1"
-                  className="peer-checked:text-[#629D23] text-gray-300 pointer-events-none "
-                >
-                  <svg
-                    className="shrink-0 size-7"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
+            <div className="flex gap-1 my-[20px]">
+              {[...Array(5)].map((_, index) => {
+                const starValue = index + 1;
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setRating(starValue)}
+                    onMouseEnter={() => setHover(starValue)}
+                    onMouseLeave={() => setHover(0)}
+                    className="text-2xl"
+                    aria-label={`Rate ${starValue} star`}
                   >
-                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
-                  </svg>
-                </label>
-
-                <input
-                  id="hs-ratings-readonly-2"
-                  type="radio"
-                  className="peer -ms-5 size-7 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0"
-                  name="hs-ratings-readonly"
-                  value="2"
-                />
-                <label
-                  htmlFor="hs-ratings-readonly-2"
-                  className="peer-checked:text-[#629D23] text-gray-300 pointer-events-none "
-                >
-                  <svg
-                    className="shrink-0 size-7"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
-                  </svg>
-                </label>
-
-                <input
-                  id="hs-ratings-readonly-3"
-                  type="radio"
-                  className="peer -ms-5 size-7 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0"
-                  name="hs-ratings-readonly"
-                  value="3"
-                />
-                <label
-                  htmlFor="hs-ratings-readonly-3"
-                  className="peer-checked:text-[#629D23] text-gray-300 pointer-events-none "
-                >
-                  <svg
-                    className="shrink-0 size-7"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
-                  </svg>
-                </label>
-
-                <input
-                  id="hs-ratings-readonly-4"
-                  type="radio"
-                  className="peer -ms-5 size-7 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0"
-                  name="hs-ratings-readonly"
-                  value="4"
-                />
-                <label
-                  htmlFor="hs-ratings-readonly-4"
-                  className="peer-checked:text-[#629D23] text-gray-300 pointer-events-none "
-                >
-                  <svg
-                    className="shrink-0 size-7"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
-                  </svg>
-                </label>
-
-                <input
-                  id="hs-ratings-readonly-5"
-                  type="radio"
-                  className="peer -ms-5 size-7 bg-transparent border-0 text-transparent cursor-pointer appearance-none checked:bg-none focus:bg-none focus:ring-0 focus:ring-offset-0"
-                  name="hs-ratings-readonly"
-                  value="5"
-                />
-                <label
-                  htmlFor="hs-ratings-readonly-5"
-                  className="peer-checked:text-[#629D23] text-gray-300 pointer-events-none"
-                >
-                  <svg
-                    className="shrink-0 size-7"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
-                  </svg>
-                </label>
-              </>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill={(hover || rating) >= starValue ? '#629D23' : 'none'}
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      className={`w-8 h-8 ${
+                        (hover || rating) >= starValue
+                          ? 'text-[#629D23]'
+                          : 'text-gray-400'
+                      }`}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.07 6.374h6.708c.969 0 1.371 1.24.588 1.81l-5.424 3.938 2.07 6.373c.3.922-.755 1.688-1.54 1.117L12 17.768l-5.423 3.938c-.784.571-1.838-.195-1.54-1.117l2.07-6.373-5.424-3.938c-.783-.57-.38-1.81.588-1.81h6.708l2.07-6.374z"
+                      />
+                    </svg>
+                  </button>
+                );
+              })}
             </div>
+
             <div>
               <label
                 className="text-[16px] font-medium font-display text-[#6E777D]"
@@ -657,9 +595,11 @@ const CustomerReviews = ({ product }) => {
                 className="w-full h-[200px] text-[16px] font-display font-normal text-[#6E777D] bg-transparent placeholder:text-[16px] placeholder:font-medium p-[15px] my-[15px] rounded-[5px] border-2 border-[#e2e2e2] focus:border-[#629D23] outline-none resize-none"
                 type="text"
                 name="text"
+                onChange={handleComment}
                 placeholder="Make Your Reviews...."
               ></textarea>
             </div>
+
             <div>
               <label
                 className="text-[16px] font-medium font-display text-[#6E777D]"
@@ -701,8 +641,12 @@ const CustomerReviews = ({ product }) => {
                 </label>
               </div>
             </div>
+
             <div className="flex items-center gap-4 mt-[30px]">
-              <button className="text-[16px] font-display font-medium text-[#2C3C28] border border-[#dee2e6] hover:text-white hover:bg-[#629D23] transition-all ease-in-out duration-300 cursor-pointer py-[10px] px-[24px] rounded-[6px]">
+              <button
+                onClick={handleCommentSubmit}
+                className="text-[16px] font-display font-medium text-[#2C3C28] border border-[#dee2e6] hover:text-white hover:bg-[#629D23] transition-all ease-in-out duration-300 cursor-pointer py-[10px] px-[24px] rounded-[6px]"
+              >
                 Add Review
               </button>
               <button
