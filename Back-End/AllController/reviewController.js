@@ -16,14 +16,20 @@ async function makeReviews(req, res, next) {
       $push: { reviews: reviews._id },
     });
 
+    let populatedReview = await reviews.populate('user', 'name');
+
     getIO().emit('reviewCreated', {
       productId,
-      review: await reviews.populate('user', 'name'),
+      review: populatedReview,
     });
 
-    res.status(200).json({ msg: 'review added successfully', data: reviews });
+    res.status(200).json({
+      msg: 'review added successfully',
+      data: populatedReview,
+    });
   } catch (error) {
     next(error);
+    console.log(error.message);
   }
 }
 
