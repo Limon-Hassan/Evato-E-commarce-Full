@@ -40,9 +40,7 @@ async function getReviews(req, res, next) {
       'user',
       'name'
     );
-    if (GetReviews.length === 0) {
-      res.status(404).json({ msg: 'no reviews found' });
-    }
+
     res.json({ msg: 'reviews found', data: GetReviews });
   } catch (error) {
     next(error);

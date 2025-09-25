@@ -60,7 +60,7 @@ const CustomerReviews = ({ product }) => {
 
   useEffect(() => {
     socket.on('reviewCreated', data => {
-      console.log('New review received:', data);
+      console.log('📩 New review received:', data);
 
       if (data.productId === product._id) {
         setReviews(prev => [data.review, ...prev]);
