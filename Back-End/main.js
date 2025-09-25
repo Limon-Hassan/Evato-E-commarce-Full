@@ -29,6 +29,13 @@ io.on('connection', socket => {
     socket.join(userId);
     console.log(`👤 User ${userId} joined their private room`);
   });
+
+  
+  socket.on('joinProduct', ({ productId }) => {
+    socket.join(productId);
+    console.log(`👤 User joined product room ${productId}`);
+  });
+
   socket.on('joinAdmin', ({ adminId }) => {
     socket.join('adminRoom');
     console.log(`👑 Admin ${adminId} joined adminRoom`);

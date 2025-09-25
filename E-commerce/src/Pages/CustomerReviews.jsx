@@ -59,17 +59,19 @@ const CustomerReviews = ({ product }) => {
   }, [product._id]);
 
   useEffect(() => {
-    socket.on('reviewCreated', data => {
-      console.log('📩 New review received:', data);
+    socket.emit('joinProduct', { productId: product._id });
+  }, [product._id]);
 
+  useEffect(() => {
+    const handleNewReview = data => {
       if (data.productId === product._id) {
+        console.log('📩 New review received:', data);
         setReviews(prev => [data.review, ...prev]);
       }
-    });
-
-    return () => {
-      socket.off('reviewCreated');
     };
+
+    socket.on('reviewCreated', handleNewReview);
+    return () => socket.off('reviewCreated', handleNewReview);
   }, [product._id]);
 
   return (

@@ -18,7 +18,7 @@ async function makeReviews(req, res, next) {
 
     let populatedReview = await reviews.populate('user', 'name');
 
-    getIO().emit('reviewCreated', {
+    getIO().to(productId).emit('reviewCreated', {
       productId,
       review: populatedReview,
     });
