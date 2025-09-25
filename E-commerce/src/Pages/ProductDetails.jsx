@@ -20,7 +20,6 @@ const ProductDetails = () => {
   });
   let location = useLocation();
   let product = location.state;
-  console.log(product);
   let HandleActive = type => {
     setButtonActive({
       a: false,

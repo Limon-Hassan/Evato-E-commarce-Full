@@ -1,5 +1,7 @@
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
+import { SocketContext } from './socket/SocketContext';
+import socket from './socket/socket';
 import Navber from './components/Navber';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -67,7 +69,9 @@ const App = () => {
           horizontal: 'right',
         }}
       >
-        <Layout />
+        <SocketContext.Provider value={socket}>
+          <Layout />
+        </SocketContext.Provider>
       </SnackbarProvider>
     </BrowserRouter>
   );

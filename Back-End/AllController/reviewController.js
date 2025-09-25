@@ -28,7 +28,7 @@ async function makeReviews(req, res, next) {
 }
 
 async function getReviews(req, res, next) {
-  let productId = req.params.id;
+  let productId = req.query.productId;
   try {
     let GetReviews = await ReviewsSchema.find({ product: productId }).populate(
       'user',

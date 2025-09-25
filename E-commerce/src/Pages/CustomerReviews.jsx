@@ -6,6 +6,7 @@ import { useSnackbar } from 'notistack';
 const CustomerReviews = ({ product }) => {
   let [toggleShow, settoggleShow] = useState(false);
   const [rating, setRating] = useState(0);
+  const [reviews, setReviews] = useState([]);
   const [Comment, setComment] = useState('');
   const [hover, setHover] = useState(0);
   let { enqueueSnackbar } = useSnackbar();
@@ -23,8 +24,8 @@ const CustomerReviews = ({ product }) => {
   };
   let handleCommentSubmit = async () => {
     try {
-      let response = await api.post('product/CreateReviews', { peyload });
-      console.log(response);
+      let response = await api.post('product/CreateReviews', peyload);
+      enqueueSnackbar(response.data.msg, { variant: 'success' });
       setRating(0);
       setComment('');
       setHover(0);
@@ -36,6 +37,24 @@ const CustomerReviews = ({ product }) => {
       settoggleShow(false);
     }
   };
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        let response = await api.get('/product/getReviews', {
+          params: { productId: product._id },
+        });
+        console.log(response);
+        setReviews(res.data.reviews || []);
+      } catch (error) {
+        console.error(error);
+        let backendMsg = error.response?.data?.msg || 'Something went wrong!';
+        enqueueSnackbar(backendMsg, { variant: 'error' });
+      }
+    };
+    fetchReviews();
+  }, [product._id]);
+
   return (
     <>
       <section className="bg-white py-8 antialiased  md:py-16">
