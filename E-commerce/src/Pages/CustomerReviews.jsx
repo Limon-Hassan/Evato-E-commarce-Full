@@ -59,6 +59,7 @@ const CustomerReviews = ({ product }) => {
   }, [product._id]);
 
   useEffect(() => {
+    socket.connect();
     socket.emit('joinProduct', { productId: product._id });
   }, [product._id]);
 
