@@ -25,6 +25,7 @@ const Navber = () => {
 
   useEffect(() => {
     const handler = data => {
+      if (!search.trim()) return;
       if (
         data.query &&
         data.query.toLowerCase().includes(search.toLowerCase())
@@ -56,12 +57,11 @@ const Navber = () => {
           params: { query: value },
         });
         const names = (res.data.products || []).map(p => p.name).slice(0, 8);
-        console.log(names);
         setSuggestions(names);
       } catch (err) {
         console.error('Search request failed:', err);
       }
-    }, 300);
+    }, 200);
   };
 
   useEffect(() => {
@@ -81,24 +81,16 @@ const Navber = () => {
     };
   }, [socket]);
 
-  const handleSuggestionClick = s => {
-    setSearch(s);
-    setSuggestions([]);
-    navigate(`/shop?query=${encodeURIComponent(s)}`);
-    setSearch('');
-  };
-
-  const handleShow = async () => {
-    let userId = JSON.parse(localStorage.getItem('auth-Info')).user.id;
-    if (!search.trim()) return;
+  const handleSuggestionClick = async s => {
     try {
       const response = await api.get('product/product/search', {
-        params: { query: search },
+        params: { query: s },
       });
-      console.log(response);
-      // navigate(`/shop?query=${encodeURIComponent(search)}`, {
-      //   state: response.data,
-      // });
+
+      navigate(`/shop?query=${encodeURIComponent(s)}`, {
+        state: response.data,
+      });
+
       setSearch('');
       setSuggestions([]);
     } catch (err) {
@@ -106,11 +98,23 @@ const Navber = () => {
     }
   };
 
-  // const handleProductItem = id => {
-  //   navigate(`/productDetails/${id}`);
-  //   setSearch('');
-  //   setSuggestions([]);
-  // };
+  const handleShow = async () => {
+    if (!search.trim()) return;
+    let currentSearch = search;
+    try {
+      const response = await api.get('product/product/search', {
+        params: { query: currentSearch },
+      });
+
+      navigate(`/shop?query=${encodeURIComponent(currentSearch)}`, {
+        state: response.data,
+      });
+      setSearch('');
+      setSuggestions([]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <>
@@ -139,6 +143,7 @@ const Navber = () => {
               </div>
               <div class="relative w-[673px] h-[60px]">
                 <input
+                  value={search}
                   onChange={handleSearch}
                   type="search"
                   className="w-full h-full bg-slate-400/20 placeholder:text-slate-400 text-slate-700 placeholder:font-display font-display text-[18px] border border-slate-300 outline-[#629D23] rounded-md pl-3 pr-[115px] py-2 transition duration-300 ease-in-out focus:border-[#629D23]  shadow-sm focus:shadow"

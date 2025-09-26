@@ -10,7 +10,6 @@ const Shop = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
