@@ -46,9 +46,9 @@ async function readProduct(req, res, next) {
         .populate('category')
         .populate({
           path: 'reviews',
-          populate: { path: 'user', select: 'name' }, 
+          populate: { path: 'user', select: 'name' },
         });
-
+      let Totoalreviews = singleProduct.length;
       const relatedProducts = await productScema
         .find({
           category: { $in: singleProduct.category },
@@ -56,7 +56,10 @@ async function readProduct(req, res, next) {
         })
         .limit(8);
 
-      return res.json({ product: singleProduct, relatedProducts });
+      return res.json({
+        product: { ...singleProduct.toObject(), Totoalreviews: Totoalreviews },
+        relatedProducts,
+      });
     } else {
       getallproducts = await productScema.find().populate('category');
       return res.json(getallproducts);
