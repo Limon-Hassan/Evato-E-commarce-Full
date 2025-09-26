@@ -6,13 +6,13 @@ import { format } from 'date-fns';
 import { SocketContext } from '../socket/SocketContext';
 
 const CustomerReviews = ({ product }) => {
+  const socket = useContext(SocketContext);
   let [toggleShow, settoggleShow] = useState(false);
   const [rating, setRating] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [Comment, setComment] = useState('');
   const [hover, setHover] = useState(0);
   let { enqueueSnackbar } = useSnackbar();
-  const socket = useContext(SocketContext);
 
   let handleShow = () => {
     settoggleShow(true);
@@ -59,7 +59,6 @@ const CustomerReviews = ({ product }) => {
   }, [product._id]);
 
   useEffect(() => {
-    socket.connect();
     socket.emit('joinProduct', { productId: product._id });
   }, [product._id]);
 
@@ -72,7 +71,10 @@ const CustomerReviews = ({ product }) => {
     };
 
     socket.on('reviewCreated', handleNewReview);
-    return () => socket.off('reviewCreated', handleNewReview);
+
+    return () => {
+      socket.off('reviewCreated', handleNewReview);
+    };
   }, [product._id]);
 
   return (
