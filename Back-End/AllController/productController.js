@@ -43,7 +43,11 @@ async function readProduct(req, res, next) {
     if (id) {
       const singleProduct = await productScema
         .findById(id)
-        .populate('category');
+        .populate('category')
+        .populate({
+          path: 'reviews',
+          populate: { path: 'user', select: 'name' }, 
+        });
 
       const relatedProducts = await productScema
         .find({

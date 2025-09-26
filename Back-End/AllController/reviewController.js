@@ -14,6 +14,7 @@ async function makeReviews(req, res, next) {
     });
     await productScema.findByIdAndUpdate(productId, {
       $push: { reviews: reviews._id },
+      $inc: { Totoalreviews: 1 }, 
     });
 
     let populatedReview = await reviews.populate('user', 'name');

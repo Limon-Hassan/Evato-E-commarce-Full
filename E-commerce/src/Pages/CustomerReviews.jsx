@@ -345,7 +345,7 @@ const CustomerReviews = ({ product }) => {
                 </div>
 
                 <div className="mt-[30px]  flex-1 ">
-                  <p className="text-base font-normal text-gray-500 mb-[30px]">
+                  <p className="text-base max-w-[800px] w-full break-words whitespace-pre-line font-normal text-gray-500 mb-[30px]">
                     {rev.comment}
                   </p>
 
