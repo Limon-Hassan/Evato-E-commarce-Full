@@ -49,6 +49,7 @@ async function readProduct(req, res, next) {
           populate: { path: 'user', select: 'name' },
         });
       let Totoalreviews = singleProduct.reviews.length;
+      console.log(Totoalreviews);
       const relatedProducts = await productScema
         .find({
           category: { $in: singleProduct.category },
