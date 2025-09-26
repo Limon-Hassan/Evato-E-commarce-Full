@@ -45,7 +45,7 @@ io.on('connection', socket => {
 
   socket.on('searchProducts', async ({ query, userId }) => {
     try {
-      const { searchProducts } = require('./controllers/searchController');
+      const { searchProducts } = require('./AllController/searchController');
 
       const req = { query: { query, userId } };
       const res = {
