@@ -48,8 +48,7 @@ async function readProduct(req, res, next) {
           path: 'reviews',
           populate: { path: 'user', select: 'name' },
         });
-      let Totoalreviews = singleProduct.reviews.length;
-      console.log(Totoalreviews);
+      let totalreviews = singleProduct.reviews.length;
       const relatedProducts = await productScema
         .find({
           category: { $in: singleProduct.category },
@@ -58,7 +57,7 @@ async function readProduct(req, res, next) {
         .limit(8);
 
       return res.json({
-        product: { ...singleProduct.toObject(), Totoalreviews: Totoalreviews },
+        product: { ...singleProduct.toObject(), Totoalreviews: totalreviews },
         relatedProducts,
       });
     } else {
