@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Container from '../Container';
 import { Navigation, Autoplay } from 'swiper/modules';
 
@@ -10,7 +10,10 @@ import 'swiper/css/scrollbar';
 import ProductDetalisPart1 from './ProductDetalisPart1';
 import AddictionalDetail from './AddictionalDetail';
 import CustomerReviews from './CustomerReviews';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import api from '../Api/axios';
+import { SocketContext } from '../socket/SocketContext';
 
 const ProductDetails = () => {
   let [buttonActive, setButtonActive] = useState({
@@ -18,9 +21,80 @@ const ProductDetails = () => {
     b: false,
     c: false,
   });
+  let navigate = useNavigate();
+  const { id } = useParams();
+  const socket = useContext(SocketContext);
+  let { enqueueSnackbar } = useSnackbar();
   let location = useLocation();
-  let product = location.state;
-  console.log(product);
+  const [product, setProduct] = useState(location.state?.product || null);
+  const [relatedProducts, setRelatedProducts] = useState(
+    location.state?.relatedProducts || []
+  );
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchProduct = async () => {
+      try {
+        let response = await api.get('product/GetProducts', { params: { id } });
+        setProduct(response.data.product);
+        setRelatedProducts(response.data.relatedProducts);
+
+        socket.emit('joinProduct', { productId: response.data.product._id });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  useEffect(() => {
+    if (!product?._id) return;
+    const handleNewReview = data => {
+      if (data.productId === product._id) {
+        setProduct(prev => ({
+          ...prev,
+          reviews: [data.review, ...prev.reviews],
+          Totoalreviews: prev.reviews.length + 1,
+        }));
+      }
+    };
+    socket.on('reviewCreated', handleNewReview);
+    return () => socket.off('reviewCreated', handleNewReview);
+  }, [product?._id]);
+
+  let handleCartItem = async product => {
+    let userId = JSON.parse(localStorage.getItem('auth-Info')).user.id;
+    try {
+      let payload = {
+        user: userId,
+        product: product._id,
+      };
+
+      let response = await api.post('Cart/createCart', payload);
+      enqueueSnackbar(response.data.msg, { variant: 'success' });
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      const index = cart.findIndex(item => item._id === product._id);
+
+      if (index > -1) {
+        cart[index].quantity += 1;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+
+      window.dispatchEvent(new Event('storage'));
+    } catch (error) {
+      let backendMsg = error.response?.data?.msg || 'Something went wrong!';
+      enqueueSnackbar(backendMsg, { variant: 'error' });
+    }
+  };
+
+  const handleProductItem = productId => {
+    navigate(`/productDetails/${productId}`);
+  };
+
   let HandleActive = type => {
     setButtonActive({
       a: false,
@@ -40,7 +114,7 @@ const ProductDetails = () => {
                   <div className="w-[480px] h-auto flex justify-center items-center mx-auto rounded-[6px] mb-[30px] border-2 border-[#f1f1f1]">
                     <img
                       className="w-full h-full"
-                      src={product.product.photo}
+                      src={product.photo}
                       alt="product"
                     />
                   </div>
@@ -48,28 +122,28 @@ const ProductDetails = () => {
                     <div className="cursor-pointer  w-[100px] p-[20px] border border-[#f1f1f1] rounded-[6px]">
                       <img
                         className="w-full h-auto"
-                        src={product.product.photo}
+                        src={product.photo}
                         alt=""
                       />
                     </div>
                     <div className="cursor-pointer  w-[100px] p-[20px] border border-[#f1f1f1] rounded-[6px]">
                       <img
                         className="w-full h-auto"
-                        src={product.product.photo}
+                        src={product.photo}
                         alt=""
                       />
                     </div>
                     <div className="cursor-pointer  w-[100px] p-[20px] border border-[#f1f1f1] rounded-[6px]">
                       <img
                         className="w-full h-auto"
-                        src={product.product.photo}
+                        src={product.photo}
                         alt=""
                       />
                     </div>
                     <div className="cursor-pointer  w-[100px] p-[20px] border border-[#f1f1f1] rounded-[6px]">
                       <img
                         className="w-full h-auto"
-                        src={product.product.photo}
+                        src={product.photo}
                         alt=""
                       />
                     </div>
@@ -83,19 +157,22 @@ const ProductDetails = () => {
                     <i class="fa-solid fa-star text-yellow-500"></i>
                     <i class="fa-solid fa-star text-yellow-500"></i>
                     <span className="text-[16px] font-display font-normal text-[#6E777D]">
-                      ({product.product.reviews && 0} Reviews)
+                      ({product.Totoalreviews || 0} Reviews)
                     </span>
                   </span>
                   <h2 className="text-[26px] font-display font-bold leading-6 text-[#2C3C28] mb-[20px]">
-                    {product.product.name}
+                    {product.name}
                   </h2>
                   <p className="text-[16px] font-display font-normal text-[#6E777D] leading-7 mb-[30px] max-w-[540px]">
-                    {product.product.discription}
+                    {product.discription}
                   </p>
                   <h3 className="text-[36px] font-display font-bold text-[#DC2626] mb-[15px]">
-                    ${product.product.price}
+                    ${product.price}
                   </h3>
-                  <button className="text-[16px] font-display font-bold text-white bg-[#629D23] px-[48px] py-[12px] rounded-[6px] cursor-pointer mb-[20px]">
+                  <button
+                    onClick={() => handleCartItem(product)}
+                    className="text-[16px] font-display font-bold text-white bg-[#629D23] px-[48px] py-[12px] rounded-[6px] cursor-pointer mb-[20px]"
+                  >
                     Add To Cart
                     <span className="ml-[10px] ">
                       <i class="fa-light fa-cart-shopping"></i>
@@ -103,16 +180,15 @@ const ProductDetails = () => {
                   </button>
                   <div className="mt-[20px] mb-[10px]">
                     <p className="text-[16px] font-display font-bold text-[#6E777d] mb-[8px]">
-                      Sold :
-                      <span className="ml-2">({product.product.sold})</span>
+                      Sold :<span className="ml-2">({product.sold})</span>
                     </p>
-                    {product.product.stock > 20 ? (
+                    {product.stock > 20 ? (
                       <p className="text-[16px] font-display font-bold text-[#629D23]">
                         In Stock
                       </p>
                     ) : (
                       <span className="text-[16px] font-display font-bold text-[#6E777d]">
-                        Available {product.product.stock}
+                        Available {product.stock}
                       </span>
                     )}
                   </div>
@@ -120,13 +196,13 @@ const ProductDetails = () => {
                     <p className="text-[16px] font-bold text-[#6E777D] font-display mb-1.5">
                       Category :
                     </p>
-                    <p>{product.product.category?.[0].name}</p>
+                    <p>{product.category?.[0].name}</p>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <p className="text-[16px] font-bold text-[#6E777D] font-display mb-1.5">
                       Tags :
                     </p>
-                    <p>{product.product.category?.[0].name}</p>
+                    <p>{product.category?.[0].name}</p>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <p className="text-[16px] font-bold text-[#6E777D] font-display mb-1.5">
@@ -138,6 +214,7 @@ const ProductDetails = () => {
               </>
             )}
           </div>
+
           <div className="bottom_part bg-white rounded-[6px] p-[60px]">
             <div className="flex items-center gap-4 border-b border-[#dee2e6] pb-[30px]">
               <button
@@ -168,13 +245,13 @@ const ProductDetails = () => {
                     : 'bg-none text-[#495057]'
                 } border border-[#dee2e6] hover:bg-[#629D23] transition-all ease-in-out duration-300 rounded-[6px] py-[13px] px-[26px] cursor-pointer hover:text-white`}
               >
-                Customer Reviews (01)
+                Customer Reviews ({product?.Totoalreviews || 0})
               </button>
             </div>
             <div className="mt-[20px] relative">
               {buttonActive.a && <ProductDetalisPart1 />}
               {buttonActive.b && <AddictionalDetail />}
-              {buttonActive.c && <CustomerReviews product={product.product} />}
+              {buttonActive.c && <CustomerReviews product={product} />}
             </div>
           </div>
 
@@ -210,8 +287,11 @@ const ProductDetails = () => {
                     prevEl: '.swiper-button-prev-custom',
                   }}
                 >
-                  {product.relatedProducts.map((item, index) => (
-                    <SwiperSlide key={index._id}>
+                  {relatedProducts.map((item, index) => (
+                    <SwiperSlide
+                      onClick={() => handleProductItem(item._id)}
+                      key={index._id}
+                    >
                       <div className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] ">
                         <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
                           <img
@@ -259,7 +339,10 @@ const ProductDetails = () => {
                             </div>
                           </div>
                           <div>
-                            <button className="text-[18px] font-display font-bold text-[#629D23] border border-[#629D23] py-[7px] px-3 rounded-[6px] hover:bg-[#629D23] hover:text-white transition-all ease-in-out duration-300">
+                            <button
+                              onClick={() => handleCartItem(item)}
+                              className="text-[18px] font-display font-bold text-[#629D23] border border-[#629D23] py-[7px] px-3 rounded-[6px] hover:bg-[#629D23] hover:text-white transition-all ease-in-out duration-300"
+                            >
                               ADD
                               <span>
                                 <i class="fa-light fa-cart-shopping"></i>

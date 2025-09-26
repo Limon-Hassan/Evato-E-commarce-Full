@@ -65,7 +65,6 @@ const CustomerReviews = ({ product }) => {
   useEffect(() => {
     const handleNewReview = data => {
       if (data.productId === product._id) {
-        console.log('📩 New review received:', data);
         setReviews(prev => [data.review, ...prev]);
       }
     };

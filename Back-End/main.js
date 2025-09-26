@@ -30,7 +30,6 @@ io.on('connection', socket => {
     console.log(`👤 User ${userId} joined their private room`);
   });
 
-  
   socket.on('joinProduct', ({ productId }) => {
     socket.join(productId);
     console.log(`👤 User joined product room ${productId}`);
@@ -42,6 +41,30 @@ io.on('connection', socket => {
   });
   socket.on('disconnect', () => {
     console.log('❌ User disconnected:', socket.id);
+  });
+
+  socket.on('searchProducts', async ({ query, userId }) => {
+    try {
+      const { searchProducts } = require('./controllers/searchController');
+
+      const req = { query: { query, userId } };
+      const res = {
+        status: code => ({
+          json: data => socket.emit('searchResults', data),
+        }),
+      };
+      const next = err => {
+        if (err) {
+          console.error('Search error:', err);
+          socket.emit('searchError', { msg: err.message });
+        }
+      };
+
+      await searchProducts(req, res, next);
+    } catch (error) {
+      console.error('Socket search error:', error);
+      socket.emit('searchError', { msg: 'Something went wrong' });
+    }
   });
 });
 

@@ -4,8 +4,17 @@ const { getIO } = require('../socket_server');
 
 async function searchProducts(req, res, next) {
   try {
-    let { query, minPrice, maxPrice, sort, page = 1, limit = 12 } = req.query;
-    let userId = req.user ? req.user.id : null;
+    let {
+      query,
+      minPrice,
+      maxPrice,
+      sort,
+      page = 1,
+      limit = 12,
+      userId: queryUserId,
+    } = req.query;
+
+    let userId = req.user?.id || queryUserId || null;
     query = query?.trim();
     page = Number(page);
     limit = Number(limit);

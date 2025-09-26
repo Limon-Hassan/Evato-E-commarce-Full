@@ -14,7 +14,7 @@ const Page5 = () => {
                 Hand Picked Products for 10% Offer
               </h3>
 
-              <TimeForSale deathline={'2025-08-28T12:00:00'} />
+              <TimeForSale deathline={'2025-10-28T12:00:00'} />
             </div>
             <div className="bg-white flex items-center flex-wrap gap-[30px] p-[30px]">
               <div className="flex group items-center border border-[#e2e2e2] bg-[#FFFFFF] p-[15px] rounded-[6px] gap-[18px] cursor-pointer">
