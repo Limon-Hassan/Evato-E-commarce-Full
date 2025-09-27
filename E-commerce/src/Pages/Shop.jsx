@@ -71,23 +71,26 @@ const Shop = () => {
   useEffect(() => {
     setLoading(true);
 
-    const params = {
-      query,
-      minPrice,
-      maxPrice,
-      sort: sortOrder,
-      page: currentPage,
-      limit: 12,
-    };
+    if (query) {
+      const params = {
+        query,
+        minPrice,
+        maxPrice,
+        sort: sortOrder,
+        page: currentPage,
+        limit: 20,
+      };
+      api
+        .get('product/product/search', { params })
+        .then(res => {
+          setSearchedProducts(res.data || []);
+          setTotalPages(res.data.totalPages || 1);
+        })
+        .catch(err => console.error(err))
+        .finally(() => setLoading(false));
 
-    api
-      .get('product/product/search', { params })
-      .then(res => {
-        setSearchedProducts(res.data);
-        setTotalPages(res.data.totalPages || 1);
-      })
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+      return;
+    }
   }, [query, minPrice, maxPrice, sortOrder, currentPage]);
 
   let handleProductItem = async id => {
@@ -236,7 +239,7 @@ const Shop = () => {
 
                 {!loading &&
                   (query
-                    ? searchedProducts.products.map((pro, index) => (
+                    ? searchedProducts.products?.map((pro, index) => (
                         <div
                           key={index}
                           onClick={() => handleProductItem(pro._id)}
@@ -249,10 +252,7 @@ const Shop = () => {
                               alt="jpg"
                             />
                             <div className="Bedge absolute top-0 left-[40px]  w-[35px] ">
-                              <div
-                                className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center
-                        [clip-path:polygon(0%_0%,100%_0%,100%_61%,100%_100%,50%_80%,0_100%,0_63%)]"
-                              >
+                              <div className="bg-yellow-400 text-green-900 font-display font-bold text-center text-[12px] h-[55px] flex items-center justify-center [clip-path:polygon(0%_0%,100%_0%,100%_61%,100%_100%,50%_80%,0_100%,  0_63%)]">
                                 25% <br></br>Off
                               </div>
                             </div>
