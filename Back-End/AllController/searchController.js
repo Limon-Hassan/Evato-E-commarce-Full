@@ -10,7 +10,7 @@ async function searchProducts(req, res, next) {
       maxPrice,
       sort,
       page = 1,
-      limit = 12,
+      limit = 20,
       userId: queryUserId,
     } = req.query;
 

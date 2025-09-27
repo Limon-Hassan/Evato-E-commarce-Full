@@ -1,18 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
 import Container from '../Container';
 import Pegination from './Pegination';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../Api/axios';
 import SkeletonProduct from '../components/SkeletonProduct';
 
 const Shop = () => {
   let [minPrice, SetminPrice] = useState(0);
   let [maxPrice, SetmaxPrice] = useState(500);
+  const [sortOrder, setSortOrder] = useState('');
   let [CurrentPrice, SetCurrentPrice] = useState(maxPrice);
   let [filteredRange, setFilteredRange] = useState(null);
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   let location = useLocation();
+  let navigate = useNavigate();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const searchParams = new URLSearchParams(location.search);
   const query = searchParams.get('query') || '';
@@ -30,6 +35,7 @@ const Shop = () => {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
+
   let handleRangeChange = e => {
     SetCurrentPrice(Number(e.target.value));
     SetmaxPrice(Number(e.target.value));
@@ -62,6 +68,38 @@ const Shop = () => {
       .finally(() => setLoading(false));
   }, [location.state, query]);
 
+  useEffect(() => {
+    setLoading(true);
+
+    const params = {
+      query,
+      minPrice,
+      maxPrice,
+      sort: sortOrder,
+      page: currentPage,
+      limit: 12,
+    };
+
+    api
+      .get('product/product/search', { params })
+      .then(res => {
+        setSearchedProducts(res.data);
+        setTotalPages(res.data.totalPages || 1);
+      })
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
+  }, [query, minPrice, maxPrice, sortOrder, currentPage]);
+
+  let handleProductItem = async id => {
+    try {
+      let response = await api.get('product/GetProducts', {
+        params: { id: id },
+      });
+      navigate(`/productDetails/${id}`, { state: response.data });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <>
       <section>
@@ -145,6 +183,7 @@ const Shop = () => {
                 </div>
               </div>
             </div>
+
             <div className="w-[1300px]">
               {query && (
                 <div className="flex justify-between items-center bg-[#F3F4F6] rounded-[6px] p-[15px] relative">
@@ -164,13 +203,19 @@ const Shop = () => {
                       <ul className="py-2 text-sm text-gray-700">
                         <li
                           className="px-4 py-2 hover:bg-[#629D23] hover:text-[#FFF] cursor-pointer transition-all ease-in-out duration-300"
-                          onClick={() => setOpen(false)}
+                          onClick={() => {
+                            setSortOrder('lowToHigh');
+                            setOpen(false);
+                          }}
                         >
                           Low to High
                         </li>
                         <li
                           className="px-4 py-2 hover:bg-[#629D23] hover:text-[#FFF] cursor-pointer transition-all ease-in-out duration-300"
-                          onClick={() => setOpen(false)}
+                          onClick={() => {
+                            setSortOrder('highToLow');
+                            setOpen(false);
+                          }}
                         >
                           High To Low
                         </li>
@@ -194,6 +239,7 @@ const Shop = () => {
                     ? searchedProducts.products.map((pro, index) => (
                         <div
                           key={index}
+                          onClick={() => handleProductItem(pro._id)}
                           className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] "
                         >
                           <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
@@ -255,7 +301,8 @@ const Shop = () => {
                     : shopProducts?.map((product, indx) => (
                         <div
                           key={indx}
-                          className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] "
+                          onClick={() => handleProductItem(product._id)}
+                          className=" cursor-pointer p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] "
                         >
                           <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
                             <img
@@ -317,7 +364,11 @@ const Shop = () => {
             </div>
           </div>
           <div className="flex items-center justify-center my-[60px]">
-            <Pegination />
+            <Pegination
+              active={currentPage}
+              setActive={setCurrentPage}
+              totalPages={totalPages}
+            />
           </div>
         </Container>
       </section>

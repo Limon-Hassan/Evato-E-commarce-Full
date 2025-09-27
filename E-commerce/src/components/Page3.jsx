@@ -1,29 +1,44 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Container from '../Container';
 import { useNavigate } from 'react-router-dom';
 import api from '../Api/axios';
 import { useSnackbar } from 'notistack';
 import SkeletonProduct from './SkeletonProduct';
+import { SocketContext } from '../socket/SocketContext';
 
 const Page3 = () => {
   let [products, setProducts] = useState([]);
   let { enqueueSnackbar } = useSnackbar();
   let [loading, setLoading] = useState(true);
   let navigate = useNavigate();
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     async function fetchProduct() {
       try {
         let response = await api.get('product/GetProducts');
-        setProducts(response.data);
+        const latestProducts = response.data.slice(0, 12);
+        setProducts(latestProducts);
       } catch (error) {
         console.error(error);
+        enqueueSnackbar('Failed to fetch products', { variant: 'error' });
       } finally {
         setLoading(false);
       }
     }
     fetchProduct();
-  }, []);
+
+    socket.on('productCreated', newProduct => {
+      setProducts(prev => {
+        const updated = [newProduct, ...prev];
+        return updated.slice(0, 12);
+      });
+    });
+
+    return () => {
+      socket.off('productCreated');
+    };
+  }, [socket]);
 
   let handleCartItem = async product => {
     let userId = JSON.parse(localStorage.getItem('auth-Info')).user.id;
@@ -33,7 +48,8 @@ const Page3 = () => {
         product: product._id,
       };
       let response = await api.post('Cart/createCart', payload);
-      enqueueSnackbar(response.data.msg, { variant: 'success' });
+      enqueueSnackbar(response.data?.msg, { variant: 'success' });
+
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
       const index = cart.findIndex(item => item._id === product._id);
@@ -48,8 +64,16 @@ const Page3 = () => {
 
       window.dispatchEvent(new Event('storage'));
     } catch (error) {
-      let backendMsg = error.response?.data?.msg || 'Something went wrong!';
-      enqueueSnackbar(backendMsg, { variant: 'error' });
+      let backendMsg = error.response?.data?.message || ' Please login.!';
+      let backendMessage =
+        error.response?.data?.msg || ' Something went wrong!';
+      if (backendMessage) {
+        enqueueSnackbar(backendMessage, { variant: 'error' });
+      }
+      if (backendMsg === 'No token found. Please login.') {
+        navigate('/login');
+        enqueueSnackbar(backendMsg, { variant: 'error' });
+      }
     }
   };
 
@@ -102,10 +126,12 @@ const Page3 = () => {
                   {products?.map(pro => (
                     <div
                       key={pro._id}
-                      onClick={() => handleProductItem(pro._id)}
-                      className="cursor-pointer p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] "
+                      className=" p-[15px] w-[250px] h-[386px] bg-[#F5F6F7] rounded-[6px] "
                     >
-                      <div className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden">
+                      <div
+                        onClick={() => handleProductItem(pro._id)}
+                        className=" relative bg-white w-[220px] h-[190px] rounded-[6px] overflow-hidden"
+                      >
                         <img
                           className="w-[100%] h-auto hover:scale-120 ease-in-out duration-300  cursor-pointer"
                           src={pro.photo || 'oil.jpg'}
@@ -120,7 +146,10 @@ const Page3 = () => {
                           </div>
                         </div>
                       </div>
-                      <h4 className="text-[16px] font-display font-bold mt-[10px] hover:text-[#629D23] transition-all ease-in-out duration-300 w-[220px] cursor-pointer ">
+                      <h4
+                        onClick={() => handleProductItem(pro._id)}
+                        className="text-[16px] font-display font-bold mt-[10px] hover:text-[#629D23] transition-all ease-in-out duration-300 w-[220px] cursor-pointer "
+                      >
                         {pro.name}
                       </h4>
                       <p className="text-[14px] font-display font-semibold text-black/30 mt-[10px]">

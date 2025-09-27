@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 
-const Pegination = () => {
-  const [active, setActive] = useState(1);
-  const totalPages = 5;
-
+const Pegination = ({ active, setActive, totalPages }) => {
   const next = () => {
     if (active < totalPages) setActive(active + 1);
   };
