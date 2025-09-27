@@ -18,27 +18,22 @@ async function searchProducts(req, res, next) {
     query = query?.trim();
     page = Number(page);
     limit = Number(limit);
+
     let filter = {};
 
-    const orArray = [];
     if (query) {
-      orArray.push({ name: { $regex: query, $options: 'i' } });
-      orArray.push({ discription: { $regex: query, $options: 'i' } });
+      filter.$or = [
+        { name: { $regex: query, $options: 'i' } },
+        { discription: { $regex: query, $options: 'i' } },
+      ];
     }
 
     if (minPrice || maxPrice) {
-      const priceFilter = {};
-      if (minPrice) priceFilter.$gte = Number(minPrice);
-      if (maxPrice) priceFilter.$lte = Number(maxPrice);
-
-      if (orArray.length > 0) {
-        orArray.forEach(item => (item.price = priceFilter));
-      } else {
-        filter.price = priceFilter;
-      }
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
     }
 
-    if (orArray.length > 0) filter.$or = orArray;
 
     let sortOption = {};
     if (sort === 'lowToHigh') sortOption.price = 1;

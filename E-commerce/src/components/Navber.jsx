@@ -105,7 +105,6 @@ const Navber = () => {
       const response = await api.get('product/product/search', {
         params: { query: currentSearch },
       });
-
       navigate(`/shop?query=${encodeURIComponent(currentSearch)}`, {
         state: response.data,
       });

@@ -4,6 +4,7 @@ import api from '../Api/axios';
 import { useSnackbar } from 'notistack';
 import { format } from 'date-fns';
 import { SocketContext } from '../socket/SocketContext';
+import { useNavigate } from 'react-router-dom';
 
 const CustomerReviews = ({ product }) => {
   const socket = useContext(SocketContext);
@@ -13,6 +14,7 @@ const CustomerReviews = ({ product }) => {
   const [Comment, setComment] = useState('');
   const [hover, setHover] = useState(0);
   let { enqueueSnackbar } = useSnackbar();
+  let navigate = useNavigate();
 
   let handleShow = () => {
     settoggleShow(true);
@@ -34,8 +36,11 @@ const CustomerReviews = ({ product }) => {
       setHover(0);
     } catch (error) {
       console.error(error);
-      let backendMsg = error.response?.data?.msg || 'Something went wrong!';
-      enqueueSnackbar(backendMsg, { variant: 'error' });
+      let backendMsg = error.response?.data?.message || 'Please login !';
+      if (backendMsg === 'No token found. Please login.') {
+        navigate('/login');
+        enqueueSnackbar(backendMsg, { variant: 'error' });
+      }
     } finally {
       settoggleShow(false);
     }
@@ -51,7 +56,9 @@ const CustomerReviews = ({ product }) => {
         setReviews(response.data.data || []);
       } catch (error) {
         console.error(error);
-        let backendMsg = error.response?.data?.msg || 'Something went wrong!';
+        let backendMsg =
+          error.response?.data?.message || 'Something went wrong!';
+        console.log(error.message);
         enqueueSnackbar(backendMsg, { variant: 'error' });
       }
     };
