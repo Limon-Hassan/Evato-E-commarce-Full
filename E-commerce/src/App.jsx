@@ -47,7 +47,7 @@ function Layout() {
             </Elements>
           }
         />
-        <Route path="/productDetails/:id" element={<ProductDetails />} />
+        <Route path="/productDetails/:id/:slug" element={<ProductDetails />} />
         <Route path="/orderDetails" element={<OrderDetails />} />
       </Routes>
 

@@ -90,7 +90,7 @@ async function CartSummery(req, res, next) {
       totalQuantity += quantity;
     });
     let subtotal = originalPrice * totalQuantity;
-    let shippingCost = subtotal >= 500 ? 0 : 200;
+    let shippingCost = subtotal >= 5000 ? 0 : 200;
     let discount = totalQuantity > 5 || subtotal >= 5000 ? subtotal * 0.05 : 0;
     let totalPrice = subtotal + additionalFees + shippingCost - discount;
     let Cartsummery = {
@@ -98,6 +98,7 @@ async function CartSummery(req, res, next) {
       totalQuantity,
       shippingCost,
       subtotal,
+      additionalFees,
       discount,
       totalPrice,
     };
@@ -158,13 +159,42 @@ async function IncreamentCart(req, res, next) {
         debug: { productPrice, quantity, additionalFees },
       });
     }
+
     await cartItem.save();
-    getIO().to(cartItem.user.toString()).emit('cartItem', cartItem);
+
+    let allCartItems = await CartSchema.find({ user: cartItem.user }).populate({
+      path: 'product',
+      select: 'price name photo',
+    });
+
+    const cartItemsArray = allCartItems.map(item => ({
+      _id: item._id,
+      product: item.product,
+      quantity: item.quantity,
+      price: item.product.price,
+    }));
+    const io = getIO();
+    io.to(cartItem.user.toString()).emit('cartItems', cartItemsArray);
+
+    const cartSummary = {
+      originalPrice: cartItem.OrginalPrice,
+      shippingCost: cartItem.shippingCost,
+      subtotal: cartItem.subTotal,
+      additionalFees: cartItem.additionalFees,
+      discount: cartItem.discount,
+      totalPrice: cartItem.totalPrice,
+    };
+
+    io.to(cartItem.user.toString()).emit('cartSummary', cartSummary);
+
     return res.status(200).json({
       msg: `Cart ${
         action === 'Increment' ? 'Incremented' : 'Decremented'
       } successfully`,
-      data: cartItem,
+      data: {
+        cartItem: cartItemsArray,
+        summary: cartSummary,
+      },
     });
   } catch (error) {
     next(error);
@@ -198,6 +228,7 @@ async function DeleteCart(req, res, next) {
     return res.status(500).json({ msg: 'server error!' });
   }
 }
+
 module.exports = {
   CreateCart,
   readcart,

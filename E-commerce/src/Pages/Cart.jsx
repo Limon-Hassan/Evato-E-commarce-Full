@@ -1,8 +1,110 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '../Container';
-import { Link } from 'react-router-dom';
+import api from '../Api/axios';
+import { useSnackbar } from 'notistack';
+import socket from '../socket/socket';
 
 const Cart = () => {
+  let { enqueueSnackbar } = useSnackbar();
+  let [cartProduct, setCartProduct] = useState([]);
+  let [summeryData, setSummeryData] = useState([]);
+
+  async function fetchCart() {
+    try {
+      let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
+      let response = await api.get(`Cart/readCart/${id}`);
+      setCartProduct(response.data);
+    } catch (error) {
+      let backendMsg = error.response?.data?.message || ' Please login.!';
+      console.log(backendMsg);
+      if (backendMsg === 'No token found. Please login.') {
+        window.location.href = '/login';
+      }
+    }
+  }
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  useEffect(() => {
+    socket.emit('joinUser', {
+      userId: JSON.parse(localStorage.getItem('auth-Info')).user.id,
+    });
+
+    const handleItemDeleted = id => {
+      console.log(id);
+    };
+
+    const handleCartFetched = CartData => {
+      console.log('point_2', CartData);
+      setCartProduct(CartData);
+    };
+    const handleSummery = Cartsummery => {
+      console.log('point_3', Cartsummery);
+      setSummeryData(Cartsummery);
+    };
+    const handleIncrement = cartItem => {
+      console.log('point_4', cartItem);
+    };
+
+    const handleDeletedCart = ({ userid }) => {
+      console.log('point_5', userid);
+    };
+
+    socket.on('cartDeleted', handleItemDeleted);
+    socket.on('CartData', handleCartFetched);
+    socket.on('CartDeleted', handleDeletedCart);
+    socket.on('cartSummery', handleSummery);
+    socket.on('cartItem', handleIncrement);
+
+    return () => {
+      socket.off('cartDeleted', handleItemDeleted);
+      socket.off('CartData', handleCartFetched);
+      socket.off('CartDeleted', handleDeletedCart);
+      socket.off('cartSummery', handleSummery);
+      socket.off('cartItem', handleIncrement);
+    };
+  }, []);
+
+  async function fetSummery() {
+    try {
+      if (!cartProduct.length === 0) return;
+      let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
+      let response = await api.get(`Cart/CartSummery/${id}`);
+      console.log(response.data);
+      setSummeryData(response.data);
+    } catch (error) {
+      let backendMsg = error.response?.data?.message || ' Please login.!';
+      console.log(backendMsg);
+      if (backendMsg === 'No token found. Please login.') {
+        window.location.href = '/login';
+      }
+    }
+  }
+
+  useEffect(() => {
+    fetSummery();
+  }, []);
+
+  let handleIncrement = async (action, id) => {
+    try {
+      let response = await api.put(`Cart/Increament/${id}?action=${action}`);
+
+      let msg = response.data.msg;
+      if (msg) {
+        enqueueSnackbar(msg, { variant: 'success' });
+        fetchCart();
+        fetSummery();
+      }
+    } catch (error) {
+      let backendMsg = error.response?.data?.message || ' Please login.!';
+      console.log(backendMsg);
+      if (backendMsg === 'No token found. Please login.') {
+        window.location.href = '/login';
+      }
+    }
+  };
+
   return (
     <>
       <section className="bg-[#F3F4F6] py-[100px]">
@@ -11,8 +113,8 @@ const Cart = () => {
             <div className="w-[75%]">
               <div className="bg-[#FFF] border border-[#e2e2e2] p-[40px] rounded-[6px] mb-[20px]">
                 <h4 className="text-[16px] font-display font-medium text-[#74787C] leading-6">
-                  If you want to get Shipping cost then purchase minimum $5000
-                  and get discounts when you're total quntity will be 10
+                  If you want to get Shipping cost free then purchase minimum
+                  $5000 and get discounts when you're total quantity will be 5
                 </h4>
               </div>
 
@@ -28,187 +130,69 @@ const Cart = () => {
                     Quantity
                   </h5>
                 </div>
-                <div className="overflow-y-scroll h-[480px] ">
-                  <div className="flex items-center gap-[150px]  py-[30px] px-[20px] border-b border-[#e2e2e2]">
-                    <div className="flex items-center gap-[30px]">
-                      <span className="bg-red-500 w-[40px] h-[40px] rounded-full flex justify-center items-center text-white cursor-pointer">
-                        <i class="fa-solid fa-xmark"></i>
-                      </span>
-                      <img
-                        className="max-w-[65px] h-auto"
-                        src="01.jpg"
-                        alt="product"
-                      />
-                      <h4 className="text-[16px] font-display font-bold text-[#2C3C28] truncate w-[250px]">
-                        Netlyfy business makes your profit Lorem ipsum dolor sit
-                        amet.
-                      </h4>
+                <div
+                  className={`overflow-y-scroll ${
+                    cartProduct.length > 5 ? 'h-[480px]' : 'h-auto'
+                  }  `}
+                >
+                  {cartProduct.length === 0 ? (
+                    <div className="flex items-center justify-center">
+                      <h5 className="text-[26px] font-display font-bold text-[#2C3C28]">
+                        No Cart Found 🥲
+                      </h5>
                     </div>
-                    <div className="flex items-center gap-[400px]">
-                      <span className="text-[18px] font-bold text-[#2C3C28] ">
-                        $500
-                      </span>
-                      <div className="flex items-center bg-white p-3 rounded-[4px] gap-3 ">
-                        <div className="mr-[12px]">
-                          <h5 className="text-[14px] font-display font-bold">
-                            1
-                          </h5>
+                  ) : (
+                    cartProduct.map((item, indx) => (
+                      <div
+                        key={indx}
+                        className="flex items-center gap-[140px]  py-[30px] px-[15px] border-b border-[#e2e2e2]"
+                      >
+                        <div className="flex items-center gap-[30px]">
+                          <span className="bg-red-500 w-[40px] h-[40px] rounded-full flex justify-center items-center text-white cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                          </span>
+                          <img
+                            className="max-w-[70px] h-auto"
+                            src={item.product.photo?.[0] || '01.jpg'}
+                            alt="product"
+                          />
+                          <h4 className="text-[16px] font-display font-bold text-[#2C3C28] truncate w-[250px]">
+                            {item.product.name}
+                          </h4>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-green-500">
-                            <i class="fa-solid fa-plus-large"></i>
-                          </button>
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-red-500">
-                            <i class="fa-solid fa-minus"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-[150px] py-[30px] px-[20px] border-b border-[#e2e2e2]">
-                    <div className="flex items-center gap-[30px]">
-                      <span className="bg-red-500 w-[40px] h-[40px] rounded-full flex justify-center items-center text-white cursor-pointer">
-                        <i class="fa-solid fa-xmark"></i>
-                      </span>
-                      <img
-                        className="max-w-[65px] h-auto"
-                        src="01.jpg"
-                        alt="product"
-                      />
-                      <h4 className="text-[16px] font-display font-bold text-[#2C3C28] truncate w-[250px]">
-                        Netlyfy business makes your profit Lorem ipsum dolor sit
-                        amet.
-                      </h4>
-                    </div>
-                    <div className="flex items-center gap-[400px]">
-                      <span className="text-[18px] font-bold text-[#2C3C28] ">
-                        $500
-                      </span>
-                      <div className="flex items-center bg-white p-3 rounded-[4px] gap-3 ">
-                        <div className="mr-[12px]">
-                          <h5 className="text-[14px] font-display font-bold">
-                            1
-                          </h5>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-green-500">
-                            <i class="fa-solid fa-plus-large"></i>
-                          </button>
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-red-500">
-                            <i class="fa-solid fa-minus"></i>
-                          </button>
+                        <div className="flex items-center gap-[400px]">
+                          <span className="text-[18px] font-bold text-[#2C3C28] ">
+                            ${item.product.price}
+                          </span>
+                          <div className="flex items-center bg-white p-3 rounded-[4px] gap-3 ">
+                            <div className="mr-[12px]">
+                              <h5 className="text-[14px] font-display font-bold">
+                                {item.quantity}
+                              </h5>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() =>
+                                  handleIncrement('Increment', item.CartitemID)
+                                }
+                                className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-green-500"
+                              >
+                                <i class="fa-solid fa-plus-large"></i>
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleIncrement('Decrement', item.CartitemID)
+                                }
+                                className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-red-500"
+                              >
+                                <i class="fa-solid fa-minus"></i>
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-[150px] py-[30px] px-[20px] border-b border-[#e2e2e2]">
-                    <div className="flex items-center gap-[30px]">
-                      <span className="bg-red-500 w-[40px] h-[40px] rounded-full flex justify-center items-center text-white cursor-pointer">
-                        <i class="fa-solid fa-xmark"></i>
-                      </span>
-                      <img
-                        className="max-w-[65px] h-auto"
-                        src="01.jpg"
-                        alt="product"
-                      />
-                      <h4 className="text-[16px] font-display font-bold text-[#2C3C28] truncate w-[250px]">
-                        Netlyfy business makes your profit Lorem ipsum dolor sit
-                        amet.
-                      </h4>
-                    </div>
-                    <div className="flex items-center gap-[400px]">
-                      <span className="text-[18px] font-bold text-[#2C3C28] ">
-                        $500
-                      </span>
-                      <div className="flex items-center bg-white p-3 rounded-[4px] gap-3 ">
-                        <div className="mr-[12px]">
-                          <h5 className="text-[14px] font-display font-bold">
-                            1
-                          </h5>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-green-500">
-                            <i class="fa-solid fa-plus-large"></i>
-                          </button>
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-red-500">
-                            <i class="fa-solid fa-minus"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-[150px] py-[30px] px-[20px] border-b border-[#e2e2e2]">
-                    <div className="flex items-center gap-[30px]">
-                      <span className="bg-red-500 w-[40px] h-[40px] rounded-full flex justify-center items-center text-white cursor-pointer">
-                        <i class="fa-solid fa-xmark"></i>
-                      </span>
-                      <img
-                        className="max-w-[65px] h-auto"
-                        src="01.jpg"
-                        alt="product"
-                      />
-                      <h4 className="text-[16px] font-display font-bold text-[#2C3C28] truncate w-[250px]">
-                        Netlyfy business makes your profit Lorem ipsum dolor sit
-                        amet.
-                      </h4>
-                    </div>
-                    <div className="flex items-center gap-[400px]">
-                      <span className="text-[18px] font-bold text-[#2C3C28] ">
-                        $500
-                      </span>
-                      <div className="flex items-center bg-white p-3 rounded-[4px] gap-3 ">
-                        <div className="mr-[12px]">
-                          <h5 className="text-[14px] font-display font-bold">
-                            1
-                          </h5>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-green-500">
-                            <i class="fa-solid fa-plus-large"></i>
-                          </button>
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-red-500">
-                            <i class="fa-solid fa-minus"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-[150px] py-[30px] px-[20px] border-b border-[#e2e2e2]">
-                    <div className="flex items-center gap-[30px]">
-                      <span className="bg-red-500 w-[40px] h-[40px] rounded-full flex justify-center items-center text-white cursor-pointer">
-                        <i class="fa-solid fa-xmark"></i>
-                      </span>
-                      <img
-                        className="max-w-[65px] h-auto"
-                        src="01.jpg"
-                        alt="product"
-                      />
-                      <h4 className="text-[16px] font-display font-bold text-[#2C3C28] truncate w-[250px]">
-                        Netlyfy business makes your profit Lorem ipsum dolor sit
-                        amet.
-                      </h4>
-                    </div>
-                    <div className="flex items-center gap-[400px]">
-                      <span className="text-[18px] font-bold text-[#2C3C28] ">
-                        $500
-                      </span>
-                      <div className="flex items-center bg-white p-3 rounded-[4px] gap-3 ">
-                        <div className="mr-[12px]">
-                          <h5 className="text-[14px] font-display font-bold">
-                            1
-                          </h5>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-green-500">
-                            <i class="fa-solid fa-plus-large"></i>
-                          </button>
-                          <button className="transition-all ease-in-out duration-300  text-[12px] font-display font-bold text-black bg-white border border-[#e2e2e2] cursor-pointer py-1  flex items-center justify-center px-2.5 hover:text-[#FFF] hover:bg-red-500">
-                            <i class="fa-solid fa-minus"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    ))
+                  )}
                 </div>
 
                 <div className="py-[30px] px-[30px] flex items-center justify-between">
@@ -236,12 +220,12 @@ const Cart = () => {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <dl className="flex items-center justify-between gap-4">
-                      <dt className="text-base font-Poppipns_FONT font-normal text-gray-500 ">
+                      <dt className="text-base font-Poppipns_FONT font-normal text-gray-500">
                         Original price
-                        <span className="ml-2">total items</span>
+                        <span className="ml-2">{cartProduct.length} Items</span>
                       </dt>
                       <dd className="text-base font-Poppipns_FONT  font-medium text-gray-900">
-                        $500
+                        ${summeryData.originalPrice || 0}
                       </dd>
                     </dl>
                     <dl className="flex items-center justify-between gap-4">
@@ -249,7 +233,7 @@ const Cart = () => {
                         Additional Fees
                       </dt>
                       <dd className="text-base font-Poppipns_FONT  font-medium text-gray-900">
-                        $200
+                        ${summeryData.additionalFees || 0}
                       </dd>
                     </dl>
 
@@ -258,7 +242,7 @@ const Cart = () => {
                         Shipping Cost
                       </dt>
                       <dd className="text-base font-Poppipns_FONT  font-medium text-gray-900">
-                        $200
+                        ${summeryData.shippingCost || 0}
                       </dd>
                     </dl>
                   </div>
@@ -267,7 +251,7 @@ const Cart = () => {
                       SubTotal
                     </dt>
                     <dd className="text-base font-Poppipns_FONT  font-medium text-gray-900">
-                      $5000
+                      ${summeryData.subtotal || 0}
                     </dd>
                   </dl>
                   <dl className="flex items-center justify-between gap-4">
@@ -275,7 +259,8 @@ const Cart = () => {
                       Discount
                     </dt>
                     <dd className="text-base font-Poppipns_FONT  font-medium text-red-500">
-                      <span className="mr-2">(-)</span>$200
+                      <span className="mr-2">(-)</span>$
+                      {summeryData.discount || 0}
                     </dd>
                   </dl>
                   <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 ">
@@ -283,25 +268,31 @@ const Cart = () => {
                       Total
                     </dt>
                     <dd className="text-base font-Poppipns_FONT  font-bold text-gray-900">
-                      $5000
+                      ${summeryData.totalPrice || 0}
                     </dd>
                   </dl>
                 </div>
 
-                <Link className="flex w-full items-center justify-center rounded-lg px-5 py-2.5  font-medium text-white bg-[#629D23] hover:bg-[#629D23]/80 text-[18px] font-display ">
+                <a
+                  href="#"
+                  className="flex w-full items-center justify-center rounded-lg px-5 py-2.5  font-medium text-white bg-[#629D23] hover:bg-[#629D23]/80 text-[18px] font-display "
+                >
                   Proceed to Checkout
-                </Link>
+                </a>
 
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-[16px] font-display font-normal text-gray-500 dark:text-gray-400">
                     or
                   </span>
-                  <Link className="inline-flex items-center gap-2 text-[16px] font-medium text-blue-500 underline hover:no-underline dark:text-blue-600 ">
+                  <a
+                    href="/"
+                    className="inline-flex items-center gap-2 text-[16px] font-medium text-blue-500 underline hover:no-underline dark:text-blue-600 "
+                  >
                     Continue Shopping
                     <span className="w-5 h-5">
                       <i className="fa-sharp fa-regular fa-arrow-right"></i>
                     </span>
-                  </Link>
+                  </a>
                 </div>
               </div>
             </div>

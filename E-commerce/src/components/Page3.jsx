@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Container from '../Container';
-import { useNavigate } from 'react-router-dom';
 import api from '../Api/axios';
 import { useSnackbar } from 'notistack';
 import SkeletonProduct from './SkeletonProduct';
@@ -10,7 +9,6 @@ const Page3 = () => {
   let [products, setProducts] = useState([]);
   let { enqueueSnackbar } = useSnackbar();
   let [loading, setLoading] = useState(true);
-  let navigate = useNavigate();
   const socket = useContext(SocketContext);
 
   useEffect(() => {
@@ -71,8 +69,7 @@ const Page3 = () => {
         enqueueSnackbar(backendMessage, { variant: 'error' });
       }
       if (backendMsg === 'No token found. Please login.') {
-        navigate('/login');
-        enqueueSnackbar(backendMsg, { variant: 'error' });
+        window.location.href = '/login';
       }
     }
   };
@@ -82,7 +79,11 @@ const Page3 = () => {
       let response = await api.get('product/GetProducts', {
         params: { id: id },
       });
-      navigate(`/productDetails/${id}`, { state: response.data });
+      
+      window.location.href = `/productDetails/${id}/${response.data.product.name.replace(
+        /\s+/g,
+        '-'
+      )}`;
     } catch (error) {
       console.error(error);
     }
