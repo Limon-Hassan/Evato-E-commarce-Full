@@ -95,10 +95,10 @@ async function CartSummery(req, res, next) {
     let discount = totalQuantity > 5 || subtotal >= 5000 ? subtotal * 0.05 : 0;
     let totalPrice = subtotal + additionalFees + shippingCost - discount;
     let Cartsummery = {
-      originalPrice,
-      totalQuantity,
+      OrginalPrice: originalPrice,
+      quantity: totalQuantity,
       shippingCost,
-      subtotal,
+      subTotal: subtotal,
       additionalFees,
       discount,
       totalPrice,
@@ -107,7 +107,9 @@ async function CartSummery(req, res, next) {
     return res.status(200).json(Cartsummery);
   } catch (error) {
     next(error);
-    return res.status(500).json({ msg: 'server error !' });
+    return res
+      .status(500)
+      .json({ msg: 'server error !', error: error.message });
   }
 }
 
@@ -244,7 +246,7 @@ async function DeleteCart(req, res, next) {
     }
   } catch (error) {
     next(error);
-    return res.status(500).json({ msg: 'server error!' });
+    return res.status(500).json({ msg: 'server error!', error: error.message });
   }
 }
 

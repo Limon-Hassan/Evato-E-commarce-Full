@@ -69,7 +69,8 @@ const Cart = () => {
       socket.off('CartData', handleCartFetched);
       socket.off('CartDeleted', handleDeletedCart);
       socket.off('cartSummery', handleSummery);
-      socket.off('cartItem', handleIncrement);
+      socket.off('cartItems', handleIncrement);
+      socket.off('cartSummary', handleICartIncrement);
     };
   }, []);
 
@@ -81,7 +82,7 @@ const Cart = () => {
       console.log('summery', response);
       setSummeryData(response.data);
     } catch (error) {
-      let backendMsg = error.response?.data?.message || ' Please login.!';
+      let backendMsg = error.response?.data?.msg || ' Please login.!';
       console.log(backendMsg);
       if (backendMsg === 'No token found. Please login.') {
         window.location.href = '/login';
