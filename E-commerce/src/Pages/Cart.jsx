@@ -13,6 +13,7 @@ const Cart = () => {
     try {
       let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
       let response = await api.get(`Cart/readCart/${id}`);
+      console.log('cartdata', response);
       setCartProduct(response.data);
     } catch (error) {
       let backendMsg = error.response?.data?.message || ' Please login.!';
@@ -36,15 +37,20 @@ const Cart = () => {
     };
 
     const handleCartFetched = CartData => {
-      console.log('point_2', CartData);
+      console.log('soket_data_1', CartData);
       setCartProduct(CartData);
     };
     const handleSummery = Cartsummery => {
-      console.log('point_3', Cartsummery);
+      console.log('soket_data_2', Cartsummery);
       setSummeryData(Cartsummery);
     };
-    const handleIncrement = cartItem => {
-      console.log('point_4', cartItem);
+    const handleIncrement = cartItemsArray => {
+      console.log('point_42', cartItemsArray);
+      setCartProduct(cartItemsArray);
+    };
+    const handleICartIncrement = cartSummary => {
+      console.log('point_4', cartSummary);
+      setSummeryData(cartSummary);
     };
 
     const handleDeletedCart = ({ userid }) => {
@@ -55,7 +61,8 @@ const Cart = () => {
     socket.on('CartData', handleCartFetched);
     socket.on('CartDeleted', handleDeletedCart);
     socket.on('cartSummery', handleSummery);
-    socket.on('cartItem', handleIncrement);
+    socket.on('cartItems', handleIncrement);
+    socket.on('cartSummary', handleICartIncrement);
 
     return () => {
       socket.off('cartDeleted', handleItemDeleted);
@@ -71,7 +78,7 @@ const Cart = () => {
       if (!cartProduct.length === 0) return;
       let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
       let response = await api.get(`Cart/CartSummery/${id}`);
-      console.log(response.data);
+      console.log('summery', response);
       setSummeryData(response.data);
     } catch (error) {
       let backendMsg = error.response?.data?.message || ' Please login.!';
@@ -89,6 +96,12 @@ const Cart = () => {
   let handleIncrement = async (action, id) => {
     try {
       let response = await api.put(`Cart/Increament/${id}?action=${action}`);
+
+      if (response) {
+        console.log(response);
+        setCartProduct(response.data.data.cartItem);
+        setSummeryData(response.data.data.summary);
+      }
 
       let msg = response.data.msg;
       if (msg) {

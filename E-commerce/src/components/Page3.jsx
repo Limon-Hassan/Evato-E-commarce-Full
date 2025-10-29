@@ -46,6 +46,7 @@ const Page3 = () => {
         product: product._id,
       };
       let response = await api.post('Cart/createCart', payload);
+      console.log(response);
       enqueueSnackbar(response.data?.msg, { variant: 'success' });
 
       let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -79,7 +80,7 @@ const Page3 = () => {
       let response = await api.get('product/GetProducts', {
         params: { id: id },
       });
-      
+
       window.location.href = `/productDetails/${id}/${response.data.product.name.replace(
         /\s+/g,
         '-'

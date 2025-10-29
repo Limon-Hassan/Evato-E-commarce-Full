@@ -6,36 +6,36 @@ async function CreateCart(req, res, next) {
   let { user, product } = req.body;
 
   try {
-    let productExist = await productScema.findOne({ _id: product });
+    const productExist = await productScema.findById(product);
     if (!productExist) {
-      return res.status(404).json({ msg: 'product not found !' });
+      return res.status(404).json({ msg: 'Product not found!' });
     }
-    let existingCard = await CartSchema.findOne({
-      user: user,
-      product: product,
-    });
-    if (existingCard) {
+
+    const existingCart = await CartSchema.findOne({ user, product });
+    if (existingCart) {
       return res
         .status(400)
         .json({ msg: 'This product is already in your cart' });
     }
-    let qty = 1;
-    let addictionalFee = 100;
-    let orginalPrice = productExist.price;
-    let subtotal = orginalPrice * qty;
-    let shippingCost = subtotal >= 5000 ? 0 : 200;
-    let discount = qty > 10 || subtotal >= 5000 ? subtotal * 0.05 : 0;
-    let total = subtotal + addictionalFee + shippingCost - discount;
-    let Cart = new CartSchema({
-      user: user,
+
+    const qty = 1;
+    const additionalFees = 100;
+    const originalPrice = productExist.price;
+    const subtotal = originalPrice * qty;
+    const shippingCost = subtotal >= 5000 ? 0 : 200;
+    const discount = qty > 5 || subtotal >= 5000 ? subtotal * 0.05 : 0;
+    const totalPrice = subtotal + additionalFees + shippingCost - discount;
+
+    const Cart = new CartSchema({
+      user,
       product,
       quantity: qty,
-      additionalFees: addictionalFee,
-      OrginalPrice: orginalPrice,
+      additionalFees,
+      OrginalPrice: originalPrice,
       subTotal: subtotal,
       shippingCost,
       discount,
-      totalPrice: total,
+      totalPrice,
     });
 
     await Cart.save();
@@ -86,10 +86,11 @@ async function CartSummery(req, res, next) {
     thisCartItem.forEach(item => {
       let productprice = item.product ? item.product.price : 0;
       let quantity = item.quantity || 0;
+      subtotal += productprice * quantity;
       originalPrice += productprice;
       totalQuantity += quantity;
     });
-    let subtotal = originalPrice * totalQuantity;
+
     let shippingCost = subtotal >= 5000 ? 0 : 200;
     let discount = totalQuantity > 5 || subtotal >= 5000 ? subtotal * 0.05 : 0;
     let totalPrice = subtotal + additionalFees + shippingCost - discount;
@@ -143,7 +144,7 @@ async function IncreamentCart(req, res, next) {
     let quantity = cartItem.quantity || 1;
     let additionalFees = cartItem.additionalFees || 100;
     let originalprice = productPrice;
-    let subtotal = originalprice * cartItem.quantity;
+    let subtotal = productPrice * cartItem.quantity;
     let shippingCost = subtotal >= 5000 ? 0 : 200;
     let discount = quantity > 10 || subtotal >= 5000 ? subtotal * 0.05 : 0;
     let totalprice = subtotal + shippingCost + additionalFees - discount;
@@ -171,18 +172,36 @@ async function IncreamentCart(req, res, next) {
       _id: item._id,
       product: item.product,
       quantity: item.quantity,
-      price: item.product.price,
+      OrginalPrice: item.product.price,
     }));
+
     const io = getIO();
+
     io.to(cartItem.user.toString()).emit('cartItems', cartItemsArray);
 
+    let totalSubtotal = 0;
+    let totalQuantity = 0;
+    const fixedFee = 100;
+
+    allCartItems.forEach(item => {
+      totalSubtotal += item.product.price * item.quantity;
+      totalQuantity += item.quantity;
+    });
+
+    const totalShippingCost = totalSubtotal >= 5000 ? 0 : 200;
+    const totalDiscount =
+      totalQuantity > 10 || totalSubtotal >= 5000 ? totalSubtotal * 0.05 : 0;
+    const finalTotal =
+      totalSubtotal + totalShippingCost + fixedFee - totalDiscount;
+
     const cartSummary = {
-      originalPrice: cartItem.OrginalPrice,
-      shippingCost: cartItem.shippingCost,
-      subtotal: cartItem.subTotal,
-      additionalFees: cartItem.additionalFees,
-      discount: cartItem.discount,
-      totalPrice: cartItem.totalPrice,
+      OrginalPrice: totalSubtotal,
+      totalQuantity,
+      shippingCost: totalShippingCost,
+      subtotal: totalSubtotal,
+      additionalFees: fixedFee,
+      discount: totalDiscount,
+      totalPrice: finalTotal,
     };
 
     io.to(cartItem.user.toString()).emit('cartSummary', cartSummary);
@@ -198,7 +217,7 @@ async function IncreamentCart(req, res, next) {
     });
   } catch (error) {
     next(error);
-    return res.status(500).json({ msg: 'server error!' });
+    return res.status(500).json({ msg: 'server error!', error: error.message });
   }
 }
 
