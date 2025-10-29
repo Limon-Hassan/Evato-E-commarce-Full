@@ -82,6 +82,7 @@ const Cart = () => {
       console.log('summery', response);
       setSummeryData(response.data);
     } catch (error) {
+      console.log(error);
       let backendMsg = error.response?.data?.msg || ' Please login.!';
       console.log(backendMsg);
       if (backendMsg === 'No token found. Please login.') {

@@ -86,19 +86,19 @@ async function CartSummery(req, res, next) {
     thisCartItem.forEach(item => {
       let productprice = item.product ? item.product.price : 0;
       let quantity = item.quantity || 0;
-      subtotal += productprice * quantity;
+      subTotal += productprice * quantity;
       originalPrice += productprice;
       totalQuantity += quantity;
     });
 
-    let shippingCost = subtotal >= 5000 ? 0 : 200;
-    let discount = totalQuantity > 5 || subtotal >= 5000 ? subtotal * 0.05 : 0;
-    let totalPrice = subtotal + additionalFees + shippingCost - discount;
+    let shippingCost = subTotal >= 5000 ? 0 : 200;
+    let discount = totalQuantity > 5 || subTotal >= 5000 ? subTotal * 0.05 : 0;
+    let totalPrice = subTotal + additionalFees + shippingCost - discount;
     let Cartsummery = {
       OrginalPrice: originalPrice,
       quantity: totalQuantity,
       shippingCost,
-      subTotal: subtotal,
+      subTotal,
       additionalFees,
       discount,
       totalPrice,
