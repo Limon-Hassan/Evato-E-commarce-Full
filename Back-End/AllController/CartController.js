@@ -234,11 +234,13 @@ async function DeleteCart(req, res, next) {
         return res.status(404).json({ msg: 'cart not found !' });
       }
       await deleteCart.deleteOne();
-      getIO().to(deleteCart.user.toString()).emit('cartDeleted', id);
-      return res.status(200).json({ msg: 'cart delete Successfully !', id });
+      getIO().to(deleteCart.user.toString()).emit('cartDeleted', deleteCart);
+      return res
+        .status(200)
+        .json({ msg: 'cart delete Successfully !', deleteCart });
     } else if (action === 'clear') {
       let deleteManyCart = await CartSchema.deleteMany({ user: userid });
-      getIO().to(userid).emit('CartDeleted', userid);
+      getIO().to(userid).emit('CartDeleted', deleteManyCart);
       return res
         .status(200)
         .json({ msg: 'All cart delete Successfully !', deleteManyCart });

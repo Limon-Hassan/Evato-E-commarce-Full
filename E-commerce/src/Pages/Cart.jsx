@@ -13,11 +13,10 @@ const Cart = () => {
     try {
       let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
       let response = await api.get(`Cart/readCart/${id}`);
-      console.log('cartdata', response);
       setCartProduct(response.data);
     } catch (error) {
+      console.log(error);
       let backendMsg = error.response?.data?.message || ' Please login.!';
-      console.log(backendMsg);
       if (backendMsg === 'No token found. Please login.') {
         window.location.href = '/login';
       }
@@ -37,19 +36,15 @@ const Cart = () => {
     };
 
     const handleCartFetched = CartData => {
-      console.log('soket_data_1', CartData);
       setCartProduct(CartData);
     };
     const handleSummery = Cartsummery => {
-      console.log('soket_data_2', Cartsummery);
       setSummeryData(Cartsummery);
     };
     const handleIncrement = cartItemsArray => {
-      console.log('point_42', cartItemsArray);
       setCartProduct(cartItemsArray);
     };
     const handleICartIncrement = cartSummary => {
-      console.log('point_4', cartSummary);
       setSummeryData(cartSummary);
     };
 
@@ -79,12 +74,10 @@ const Cart = () => {
       if (!cartProduct.length === 0) return;
       let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
       let response = await api.get(`Cart/CartSummery/${id}`);
-      console.log('summery', response);
       setSummeryData(response.data);
     } catch (error) {
       console.log(error);
-      let backendMsg = error.response?.data?.msg || ' Please login.!';
-      console.log(backendMsg);
+      let backendMsg = error.response?.data?.message || ' Please login.!';
       if (backendMsg === 'No token found. Please login.') {
         window.location.href = '/login';
       }
@@ -112,8 +105,31 @@ const Cart = () => {
         fetSummery();
       }
     } catch (error) {
+      console.log(error);
       let backendMsg = error.response?.data?.message || ' Please login.!';
-      console.log(backendMsg);
+      if (backendMsg === 'No token found. Please login.') {
+        window.location.href = '/login';
+      }
+    }
+  };
+
+  let clearCart = async (action, id) => {
+    let userID = JSON.parse(localStorage.getItem('auth-Info')).user.id;
+    try {
+      if (action === 'single') {
+        let response = await api.delete(
+          `Cart/DeleteCart/${id}?action=${action}`
+        );
+        console.log('single', response);
+      } else {
+        let response = await api.delete(
+          `Cart/DeleteCart/${id}?action=${action}&userid=${userID}`
+        );
+        console.log('all', response);
+      }
+    } catch (error) {
+      console.log(error);
+      let backendMsg = error.response?.data?.message || ' Please login.!';
       if (backendMsg === 'No token found. Please login.') {
         window.location.href = '/login';
       }
@@ -129,7 +145,7 @@ const Cart = () => {
               <div className="bg-[#FFF] border border-[#e2e2e2] p-[40px] rounded-[6px] mb-[20px]">
                 <h4 className="text-[16px] font-display font-medium text-[#74787C] leading-6">
                   If you want to get Shipping cost free then purchase minimum
-                  $5000 and get discounts when you're total quantity will be 5
+                  $5000 and get discounts when you're total quantity would be 5
                 </h4>
               </div>
 
@@ -163,7 +179,10 @@ const Cart = () => {
                         className="flex items-center gap-[140px]  py-[30px] px-[15px] border-b border-[#e2e2e2]"
                       >
                         <div className="flex items-center gap-[30px]">
-                          <span className="bg-red-500 w-[40px] h-[40px] rounded-full flex justify-center items-center text-white cursor-pointer">
+                          <span
+                            onClick={() => clearCart('single', item.CartitemID)}
+                            className="bg-red-500 w-[40px] h-[40px] rounded-full flex justify-center items-center text-white cursor-pointer"
+                          >
                             <i class="fa-solid fa-xmark"></i>
                           </span>
                           <img
@@ -221,7 +240,10 @@ const Cart = () => {
                       Apply Coupon
                     </button>
                   </div>
-                  <button className="text-[16px] font-bold font-display text-[#FFF] bg-[#629D23] px-[28px] py-[10px] rounded-[6px] cursor-pointer">
+                  <button
+                    onClick={() => clearCart('clear')}
+                    className="text-[16px] font-bold font-display text-[#FFF] bg-[#629D23] px-[28px] py-[10px] rounded-[6px] cursor-pointer"
+                  >
                     Clear All
                   </button>
                 </div>
@@ -240,7 +262,7 @@ const Cart = () => {
                         <span className="ml-2">{cartProduct.length} Items</span>
                       </dt>
                       <dd className="text-base font-Poppipns_FONT  font-medium text-gray-900">
-                        ${summeryData.originalPrice || 0}
+                        ${summeryData.OrginalPrice || 0}
                       </dd>
                     </dl>
                     <dl className="flex items-center justify-between gap-4">
@@ -266,7 +288,7 @@ const Cart = () => {
                       SubTotal
                     </dt>
                     <dd className="text-base font-Poppipns_FONT  font-medium text-gray-900">
-                      ${summeryData.subtotal || 0}
+                      ${summeryData.subTotal || 0}
                     </dd>
                   </dl>
                   <dl className="flex items-center justify-between gap-4">
