@@ -13,6 +13,7 @@ const Cart = () => {
     try {
       let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
       let response = await api.get(`Cart/readCart/${id}`);
+      console.log(response)
       setCartProduct(response.data);
     } catch (error) {
       console.log(error);
@@ -31,8 +32,8 @@ const Cart = () => {
       userId: JSON.parse(localStorage.getItem('auth-Info')).user.id,
     });
 
-    const handleItemDeleted = id => {
-      console.log(id);
+    const handleItemDeleted = deleteCart => {
+      console.log('singlesketch', deleteCart);
     };
 
     const handleCartFetched = CartData => {
@@ -48,8 +49,8 @@ const Cart = () => {
       setSummeryData(cartSummary);
     };
 
-    const handleDeletedCart = ({ userid }) => {
-      console.log('point_5', userid);
+    const handleDeletedCart = deleteManyCart => {
+      console.log('point_5', deleteManyCart);
     };
 
     socket.on('cartDeleted', handleItemDeleted);
@@ -74,6 +75,7 @@ const Cart = () => {
       if (!cartProduct.length === 0) return;
       let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
       let response = await api.get(`Cart/CartSummery/${id}`);
+      console.log(response )
       setSummeryData(response.data);
     } catch (error) {
       console.log(error);
@@ -168,7 +170,7 @@ const Cart = () => {
                 >
                   {cartProduct.length === 0 ? (
                     <div className="flex items-center justify-center">
-                      <h5 className="text-[26px] font-display font-bold text-[#2C3C28]">
+                      <h5 className="text-[26px] my-[100px] font-display font-bold text-[#2C3C28]">
                         No Cart Found 🥲
                       </h5>
                     </div>

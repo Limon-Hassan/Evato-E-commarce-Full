@@ -56,7 +56,7 @@ async function readcart(req, res, next) {
       'product',
       'name photo price '
     );
-    if (Getcart.length === 0) {
+    if (!Getcart || Getcart.length === 0) {
       return res.status(404).json({ msg: 'cart not found !' });
     }
     let CartData = Getcart.map(item => ({
@@ -77,7 +77,7 @@ async function CartSummery(req, res, next) {
   let { id } = req.params;
   try {
     thisCartItem = await CartSchema.find({ user: id }).populate('product');
-    if (!thisCartItem) {
+    if (!thisCartItem || thisCartItem.length === 0) {
       return res.status(404).json({ msg: 'Cart not Found !' });
     }
     let originalPrice = 0;
@@ -123,7 +123,7 @@ async function IncreamentCart(req, res, next) {
       select: 'price stock',
     });
 
-    if (!cartItem) {
+    if (!cartItem || cartItem.length === 0) {
       return res.status(404).json({ msg: 'Cart item not found' });
     }
     if (action === 'Increment') {
@@ -230,7 +230,7 @@ async function DeleteCart(req, res, next) {
   try {
     if (action === 'single') {
       let deleteCart = await CartSchema.findById(id);
-      if (!deleteCart) {
+      if (!deleteCart || deleteCart.length === 0) {
         return res.status(404).json({ msg: 'cart not found !' });
       }
       await deleteCart.deleteOne();
