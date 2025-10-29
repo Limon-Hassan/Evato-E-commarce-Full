@@ -81,6 +81,7 @@ async function CartSummery(req, res, next) {
       return res.status(404).json({ msg: 'Cart not Found !' });
     }
     let originalPrice = 0;
+    let subTotal = 0;
     let totalQuantity = 0;
     const additionalFees = 100;
     thisCartItem.forEach(item => {
