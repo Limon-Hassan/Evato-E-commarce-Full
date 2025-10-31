@@ -1,11 +1,13 @@
 import React from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useState } from 'react';
+import { useSnackbar } from 'notistack';
 
 const PaymentStripe = () => {
+  let { enqueueSnackbar } = useSnackbar();
   const stripe = useStripe();
   const elements = useElements();
-  const [amount, setAmount] = useState(4999); // $49.99 in cents
+  const [amount, setAmount] = useState(4999);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -24,7 +26,7 @@ const PaymentStripe = () => {
 
     if (error) {
       console.error(error);
-      alert(error.message);
+      enqueueSnackbar(error.message, { variant: 'success' });
     } else {
       console.log('PaymentMethod:', paymentMethod);
       alert(`Static payment created: $${(amount / 100).toFixed(2)}`);

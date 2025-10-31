@@ -13,7 +13,6 @@ const Cart = () => {
     try {
       let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
       let response = await api.get(`Cart/readCart/${id}`);
-      console.log(response)
       setCartProduct(response.data);
     } catch (error) {
       console.log(error);
@@ -33,7 +32,15 @@ const Cart = () => {
     });
 
     const handleItemDeleted = deleteCart => {
-      console.log('singlesketch', deleteCart);
+      setCartProduct(prevCart =>
+        prevCart.filter(item => item.CartitemID !== deleteCart._id)
+      );
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      let updatedCart = cart.filter(item => item.CartitemID !== deleteCart._id);
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+
+      window.dispatchEvent(new Event('storage'));
+      fetSummery();
     };
 
     const handleCartFetched = CartData => {
@@ -50,7 +57,12 @@ const Cart = () => {
     };
 
     const handleDeletedCart = deleteManyCart => {
-      console.log('point_5', deleteManyCart);
+      setCartProduct([]);
+      setSummeryData({});
+      localStorage.removeItem('cart');
+
+      window.dispatchEvent(new Event('storage'));
+      enqueueSnackbar(response.data.msg, { variant: 'success' });
     };
 
     socket.on('cartDeleted', handleItemDeleted);
@@ -75,9 +87,11 @@ const Cart = () => {
       if (!cartProduct.length === 0) return;
       let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
       let response = await api.get(`Cart/CartSummery/${id}`);
-      console.log(response )
       setSummeryData(response.data);
     } catch (error) {
+      if (error.response.data.msg === 'Cart not Found !') {
+        setSummeryData({});
+      }
       console.log(error);
       let backendMsg = error.response?.data?.message || ' Please login.!';
       if (backendMsg === 'No token found. Please login.') {
@@ -122,12 +136,30 @@ const Cart = () => {
         let response = await api.delete(
           `Cart/DeleteCart/${id}?action=${action}`
         );
-        console.log('single', response);
+        if (response) {
+          fetSummery();
+          setCartProduct(prevCart =>
+            prevCart.filter(item => item.CartitemID !== id)
+          );
+          let cart = JSON.parse(localStorage.getItem('cart')) || [];
+          let updatedCart = cart.filter(item => item.CartitemID !== id);
+          localStorage.setItem('cart', JSON.stringify(updatedCart));
+
+          window.dispatchEvent(new Event('storage'));
+          enqueueSnackbar(response.data.msg, { variant: 'success' });
+        }
       } else {
         let response = await api.delete(
           `Cart/DeleteCart/${id}?action=${action}&userid=${userID}`
         );
-        console.log('all', response);
+        if (response) {
+          setCartProduct([]);
+          setSummeryData({});
+          localStorage.removeItem('cart');
+
+          window.dispatchEvent(new Event('storage'));
+          enqueueSnackbar(response.data.msg, { variant: 'success' });
+        }
       }
     } catch (error) {
       console.log(error);
@@ -261,7 +293,9 @@ const Cart = () => {
                     <dl className="flex items-center justify-between gap-4">
                       <dt className="text-base font-Poppipns_FONT font-normal text-gray-500">
                         Original price
-                        <span className="ml-2">{cartProduct.length} Items</span>
+                        <span className="ml-2">
+                          {cartProduct.length || 0} Items
+                        </span>
                       </dt>
                       <dd className="text-base font-Poppipns_FONT  font-medium text-gray-900">
                         ${summeryData.OrginalPrice || 0}
@@ -313,8 +347,19 @@ const Cart = () => {
                 </div>
 
                 <a
-                  href="#"
-                  className="flex w-full items-center justify-center rounded-lg px-5 py-2.5  font-medium text-white bg-[#629D23] hover:bg-[#629D23]/80 text-[18px] font-display "
+                  href={cartProduct.length === 0 ? '#' : '/checkout'}
+                  type="button"
+                  className={`flex w-full items-center justify-center rounded-lg px-5 py-2.5 font-medium text-white text-[18px] font-display
+                 ${
+                   cartProduct.length === 0
+                     ? 'bg-gray-400 cursor-not-allowed'
+                     : 'bg-[#629D23] hover:bg-[#629D23]/80'
+                 }`}
+                  onClick={e => {
+                    if (cartProduct.length === 0) {
+                      e.preventDefault();
+                    }
+                  }}
                 >
                   Proceed to Checkout
                 </a>

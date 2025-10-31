@@ -70,7 +70,7 @@ let ChekoutSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ['cash on delivery', 'debit card', 'bkash', 'nogod'],
+      enum: ['cash on delivery', 'Payment by Stripe', 'bkash', 'nogod'],
       required: true,
     },
     paymentStatus: {
@@ -80,6 +80,7 @@ let ChekoutSchema = new mongoose.Schema(
     },
     uniqueOrderID: {
       type: String,
+      unique: true,
     },
     delivery: {
       type: String,

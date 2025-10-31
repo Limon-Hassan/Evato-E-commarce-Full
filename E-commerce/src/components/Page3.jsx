@@ -46,23 +46,29 @@ const Page3 = () => {
         product: product._id,
       };
       let response = await api.post('Cart/createCart', payload);
-      console.log(response);
       enqueueSnackbar(response.data?.msg, { variant: 'success' });
+      if (response) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartItemId = response.data.data._id;
 
-      const index = cart.findIndex(item => item._id === product._id);
+        const index = cart.findIndex(item => item.CartitemID === cartItemId);
 
-      if (index > -1) {
-        cart[index].quantity += 1;
-      } else {
-        cart.push({ ...product, quantity: 1 });
+        if (index > -1) {
+          cart[index].quantity += 1;
+        } else {
+          cart.push({
+            ...product,
+            CartitemID: cartItemId,
+            quantity: 1,
+          });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('storage'));
       }
-
-      localStorage.setItem('cart', JSON.stringify(cart));
-
-      window.dispatchEvent(new Event('storage'));
     } catch (error) {
+      console.log(error);
       let backendMsg = error.response?.data?.message || ' Please login.!';
       let backendMessage =
         error.response?.data?.msg || ' Something went wrong!';

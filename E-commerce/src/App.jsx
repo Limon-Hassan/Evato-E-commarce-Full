@@ -19,6 +19,7 @@ import Cart from './Pages/Cart';
 import Checkout from './Pages/Checkout';
 import SentOTP from './Pages/SentOTP';
 import GoogleRedirect from './Pages/GoogleRedirect';
+import PaymentSuccessfull from './Pages/PaymentSuccessfull';
 
 const stripePromise = loadStripe('pk_test_1234567890');
 
@@ -49,6 +50,7 @@ function Layout() {
         />
         <Route path="/productDetails/:id/:slug" element={<ProductDetails />} />
         <Route path="/orderDetails" element={<OrderDetails />} />
+        <Route path="/success/:slug" element={<PaymentSuccessfull />} />
       </Routes>
 
       {location.pathname !== '/' && <Page8 />}

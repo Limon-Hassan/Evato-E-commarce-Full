@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '../Container';
 import CheckBox from './CheckBox';
 import PaymentStripe from './paymentStripe';
+import api from '../Api/axios';
+import { useSnackbar } from 'notistack';
 
 const Checkout = () => {
+  let { enqueueSnackbar } = useSnackbar();
   let [Selectpayment, setSelectpayment] = useState(null);
   let [SelectpaymentStipe, setSelectpaymentStipe] = useState(false);
+  let [cart, setCart] = useState([]);
+  let [name, setName] = useState('');
+  let [email, setEmail] = useState('');
+  let [address, setAddress] = useState('');
+  let [city, setCity] = useState('');
+  let [phone, setPhone] = useState('');
+  let [summery, setSummeryData] = useState({});
+
   const handlePaymentChange = paymentMethod => {
     setSelectpayment(paymentMethod);
     if (paymentMethod === 'Payment by Stripe') {
@@ -15,6 +26,86 @@ const Checkout = () => {
     }
   };
 
+  useEffect(() => {
+    async function fetchCart() {
+      try {
+        let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
+        let response = await api.get(`Cart/readCart/${id}`);
+        setCart(response.data);
+      } catch (error) {
+        console.log(error);
+        let backendMsg = error.response?.data?.message || ' Please login.!';
+        if (backendMsg === 'No token found. Please login.') {
+          window.location.href = '/login';
+        }
+      }
+    }
+    fetchCart();
+  }, []);
+
+  useEffect(() => {
+    async function fetSummery() {
+      try {
+        let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
+        let response = await api.get(`Cart/CartSummery/${id}`);
+        setSummeryData(response.data);
+      } catch (error) {
+        console.log(error);
+        let backendMsg = error.response?.data?.message || ' Please login.!';
+        if (backendMsg === 'No token found. Please login.') {
+          window.location.href = '/login';
+        }
+      }
+    }
+    fetSummery();
+  }, []);
+
+  let handleOrder = async () => {
+    try {
+      if (!name || !email || !address || !city || !phone) {
+        enqueueSnackbar('Please fill all the fields', { variant: 'error' });
+        return;
+      } else if (!Selectpayment) {
+        enqueueSnackbar('Please select a payment method', { variant: 'error' });
+        return;
+      }
+
+      let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
+
+      let payload = {
+        name,
+        email,
+        address,
+        city,
+        phone,
+        paymentMethod: Selectpayment,
+      };
+
+      let response = await api.post(`checkout/MakeCheckout/${id}`, payload);
+      if (response) {
+        setCart([]);
+        setSummeryData({});
+        setName('');
+        setEmail('');
+        setAddress('');
+        setCity('');
+        setPhone('');
+        setSelectpayment(null);
+        localStorage.removeItem('cart');
+        window.dispatchEvent(new Event('storage'));
+        let orderID = response.data.order.uniqueOrderID;
+        localStorage.setItem('orderID', orderID);
+        window.location.href = `/success/${orderID}`;
+        enqueueSnackbar('Order placed successfully!', { variant: 'success' });
+      }
+    } catch (error) {
+      console.log(error);
+      let backendMsg = error.response?.data?.msg || 'Please login.';
+      if (backendMsg === 'No token found. Please login.') {
+        window.location.href = '/login';
+      }
+    }
+  };
   return (
     <>
       <section className="py-[100px] bg-[#F3F4F6]">
@@ -35,6 +126,8 @@ const Checkout = () => {
                   className="text-[16px] font-display font-medium text-[#6E777D] bg-transparent border-2 border-[#e8e8e8] h-[50px] outline-none focus:border-[#629D23] transition-all ease-in-out duration-500 mt-[10px] px-[15px] w-full rounded-[6px]"
                   type="email"
                   name="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                   id="email"
                 />
               </div>
@@ -49,6 +142,8 @@ const Checkout = () => {
                   className="text-[16px] font-display font-medium text-[#6E777D] bg-transparent border-2 border-[#e8e8e8] h-[50px] outline-none focus:border-[#629D23] transition-all ease-in-out duration-500 mt-[10px] px-[15px] w-full rounded-[6px]"
                   type="name"
                   name="name"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
                   id="name"
                 />
               </div>
@@ -63,6 +158,8 @@ const Checkout = () => {
                   className="text-[16px] font-display font-medium text-[#6E777D] bg-transparent border-2 border-[#e8e8e8] h-[50px] outline-none focus:border-[#629D23] transition-all ease-in-out duration-500 mt-[10px] px-[15px] w-full rounded-[6px]"
                   type="text"
                   name="text"
+                  value={city}
+                  onChange={e => setCity(e.target.value)}
                   id="text"
                 />
               </div>
@@ -77,6 +174,8 @@ const Checkout = () => {
                   className="text-[16px] font-display font-medium text-[#6E777D] bg-transparent border-2 border-[#e8e8e8] h-[50px] outline-none focus:border-[#629D23] transition-all ease-in-out duration-500 mt-[10px] px-[15px] w-full rounded-[6px]"
                   type="number"
                   name="phone"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
                   id="phone"
                 />
               </div>
@@ -91,6 +190,8 @@ const Checkout = () => {
                   className="text-[16px] font-display font-medium text-[#6E777D] bg-transparent border-2 border-[#e8e8e8] h-[50px] outline-none focus:border-[#629D23] transition-all ease-in-out duration-500 mt-[10px] px-[15px] w-full rounded-[6px]"
                   type="text"
                   name="text"
+                  value={address}
+                  onChange={e => setAddress(e.target.value)}
                   id="text"
                 />
               </div>
@@ -107,99 +208,42 @@ const Checkout = () => {
                   <div class="px-4 py-6 sm:px-8 sm:py-10">
                     <div class="flow-root">
                       <ul class="-my-8 overflow-y-scroll h-[270px] mb-[20px]">
-                        <li class="flex flex-col space-y-3 py-6 text-left sm:flex-row sm:space-x-5 sm:space-y-0">
-                          <div class="shrink-0 relative">
-                            <span class="absolute top-1 left-1 flex h-6 w-6 items-center justify-center rounded-full border bg-white text-sm font-medium text-gray-500 shadow sm:-top-2 sm:-right-2">
-                              1
-                            </span>
-                            <img
-                              class="h-24 w-24 max-w-full rounded-lg object-cover"
-                              src="https://images.unsplash.com/photo-1588484628369-dd7a85bfdc38?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTh8fHNuZWFrZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=150&q=60"
-                              alt=""
-                            />
-                          </div>
+                        {cart.map((item, index) => (
+                          <li
+                            key={index}
+                            class="flex flex-col space-y-3 py-6 text-left sm:flex-row sm:space-x-5 sm:space-y-0"
+                          >
+                            <div class="shrink-0 relative">
+                              <span class="absolute top-1 left-1 flex h-6 w-6 items-center justify-center rounded-full border bg-white text-sm font-medium text-gray-500 shadow sm:-top-2 sm:-right-2">
+                                {item.quantity}
+                              </span>
+                              <img
+                                class="h-24 w-24 max-w-full rounded-lg object-cover"
+                                src={item.product?.photo[0]}
+                                alt=""
+                              />
+                            </div>
 
-                          <div class="relative flex flex-1 flex-col justify-between">
-                            <div class="sm:col-gap-5 sm:grid sm:grid-cols-2">
-                              <div class="pr-8 sm:pr-5">
-                                <p class="text-base font-semibold text-gray-900">
-                                  Nike Air Max 2019
-                                </p>
-                                <p class="mx-0 mt-1 mb-0 text-sm text-gray-400">
-                                  36EU - 4US
-                                </p>
-                              </div>
+                            <div class="relative flex flex-1 flex-col justify-between">
+                              <div class="sm:col-gap-5 sm:grid sm:grid-cols-2">
+                                <div class="pr-8 sm:pr-5">
+                                  <p class="text-base font-semibold text-gray-900">
+                                    {item.product?.name}
+                                  </p>
+                                  <p class="mx-0 mt-1 mb-0 text-sm text-gray-400">
+                                    36EU - 4US
+                                  </p>
+                                </div>
 
-                              <div class="mt-4 flex items-end justify-between sm:mt-0 sm:items-start sm:justify-end">
-                                <p class="shrink-0 w-20 text-base font-semibold text-gray-900 sm:order-2 sm:ml-8 sm:text-right">
-                                  $1259.00
-                                </p>
+                                <div class="mt-4 flex items-end justify-between sm:mt-0 sm:items-start sm:justify-end">
+                                  <p class="shrink-0 w-20 text-base font-semibold text-gray-900 sm:order-2 sm:ml-8 sm:text-right">
+                                    ${item.product?.price}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </li>
-                        <li class="flex flex-col space-y-3 py-6 text-left sm:flex-row sm:space-x-5 sm:space-y-0">
-                          <div class="shrink-0 relative">
-                            <span class="absolute top-1 left-1 flex h-6 w-6 items-center justify-center rounded-full border bg-white text-sm font-medium text-gray-500 shadow sm:-top-2 sm:-right-2">
-                              1
-                            </span>
-                            <img
-                              class="h-24 w-24 max-w-full rounded-lg object-cover"
-                              src="https://images.unsplash.com/photo-1588484628369-dd7a85bfdc38?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTh8fHNuZWFrZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=150&q=60"
-                              alt=""
-                            />
-                          </div>
-
-                          <div class="relative flex flex-1 flex-col justify-between">
-                            <div class="sm:col-gap-5 sm:grid sm:grid-cols-2">
-                              <div class="pr-8 sm:pr-5">
-                                <p class="text-base font-semibold text-gray-900">
-                                  Nike Air Max 2019
-                                </p>
-                                <p class="mx-0 mt-1 mb-0 text-sm text-gray-400">
-                                  36EU - 4US
-                                </p>
-                              </div>
-
-                              <div class="mt-4 flex items-end justify-between sm:mt-0 sm:items-start sm:justify-end">
-                                <p class="shrink-0 w-20 text-base font-semibold text-gray-900 sm:order-2 sm:ml-8 sm:text-right">
-                                  $1259.00
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
-                        <li class="flex flex-col space-y-3 py-6 text-left sm:flex-row sm:space-x-5 sm:space-y-0">
-                          <div class="shrink-0 relative">
-                            <span class="absolute top-1 left-1 flex h-6 w-6 items-center justify-center rounded-full border bg-white text-sm font-medium text-gray-500 shadow sm:-top-2 sm:-right-2">
-                              1
-                            </span>
-                            <img
-                              class="h-24 w-24 max-w-full rounded-lg object-cover"
-                              src="https://images.unsplash.com/photo-1588484628369-dd7a85bfdc38?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTh8fHNuZWFrZXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=150&q=60"
-                              alt=""
-                            />
-                          </div>
-
-                          <div class="relative flex flex-1 flex-col justify-between">
-                            <div class="sm:col-gap-5 sm:grid sm:grid-cols-2">
-                              <div class="pr-8 sm:pr-5">
-                                <p class="text-base font-semibold text-gray-900">
-                                  Nike Air Max 2019
-                                </p>
-                                <p class="mx-0 mt-1 mb-0 text-sm text-gray-400">
-                                  36EU - 4US
-                                </p>
-                              </div>
-
-                              <div class="mt-4 flex items-end justify-between sm:mt-0 sm:items-start sm:justify-end">
-                                <p class="shrink-0 w-20 text-base font-semibold text-gray-900 sm:order-2 sm:ml-8 sm:text-right">
-                                  $1259.00
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </li>
+                          </li>
+                        ))}
                       </ul>
                     </div>
 
@@ -207,27 +251,35 @@ const Checkout = () => {
                       <div class="flex items-center justify-between">
                         <p class="text-gray-400">Subtotal</p>
                         <p class="text-lg font-semibold text-gray-900">
-                          $2399.00
+                          ${summery.subTotal}
                         </p>
                       </div>
                       <div class="flex items-center justify-between">
                         <p class="text-gray-400">Shipping</p>
-                        <p class="text-lg font-semibold text-gray-900">$8.00</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                          ${summery.shippingCost}
+                        </p>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <p class="text-gray-400">Shipping</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                          ${summery.discount}
+                        </p>
                       </div>
                     </div>
                     <div class="mt-6 flex items-center justify-between">
                       <p class="text-sm font-medium text-gray-900">Total</p>
                       <p class="text-2xl font-semibold text-gray-900">
                         <span class="text-xs font-normal text-gray-400">$</span>
-                        2499.00
+                        {summery.totalPrice}
                       </p>
                     </div>
                     <div className="my-[20px]">
                       <CheckBox
                         label="Cash on Delivery"
-                        checked={Selectpayment === 'Cash on Devilery'}
+                        checked={Selectpayment === 'cash on delivery'}
                         className="rounded-full mb-2.5"
-                        onChange={() => handlePaymentChange('Cash on Devilery')}
+                        onChange={() => handlePaymentChange('cash on delivery')}
                       />
                       <CheckBox
                         label="Payment by Stripe"
@@ -240,6 +292,7 @@ const Checkout = () => {
                     </div>
                     <div class="mt-6 text-center">
                       <button
+                        onClick={handleOrder}
                         type="button"
                         class="group inline-flex w-full items-center justify-center rounded-md bg-[#629D23] cursor-pointer px-6 py-4 text-lg font-semibold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800"
                       >
