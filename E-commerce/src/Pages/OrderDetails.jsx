@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from '../Container';
 
 const OrderDetails = () => {
+  let [order, setOrder] = useState({});
+  useEffect(() => {
+    async function fetchOrder() {
+      try {
+        let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
+        let response = await api.get(`Order/readOrder/${id}`);
+        setOrder(response.data);
+      } catch (error) {
+        console.log(error);
+        let backendMsg = error.response?.data?.message || ' Please login.!';
+        enqueueSnackbar(backendMsg, { variant: 'error' });
+      }
+    }
+    fetchOrder();
+  }, []);
+
   return (
     <>
       <section>
