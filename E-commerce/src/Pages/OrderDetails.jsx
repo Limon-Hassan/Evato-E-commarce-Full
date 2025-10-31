@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import Container from '../Container';
+import { format } from 'date-fns';
+import api from '../Api/axios';
 
 const OrderDetails = () => {
-  let [order, setOrder] = useState({});
+  let [order, setOrder] = useState([]);
+
+  
   useEffect(() => {
     async function fetchOrder() {
       try {
         let id = JSON.parse(localStorage.getItem('auth-Info')).user.id;
-        let response = await api.get(`Order/readOrder/${id}`);
-        setOrder(response.data);
+        let response = await api.get(`checkout/getCheckout/${id}`);
+        setOrder(response.data.data);
       } catch (error) {
         console.log(error);
         let backendMsg = error.response?.data?.message || ' Please login.!';
-        enqueueSnackbar(backendMsg, { variant: 'error' });
+        if (backendMsg === 'No token found. Please login.') {
+          window.location.href = '/login';
+        }
       }
     }
     fetchOrder();
@@ -27,9 +33,9 @@ const OrderDetails = () => {
               Your Orders
             </h3>
             <div className="border border-[#e2e2e2]">
-              <div className="flex justify-between items-center border-b border-[#e2e2e2]">
+              <div className="flex gap-[200px] items-center border-b border-[#e2e2e2]">
                 <h5 className="uppercase  text-[16px] font-medium font-display text-[#2C3C28] p-[15px]">
-                  Order
+                  Order ID
                 </h5>
                 <h5 className="uppercase  text-[16px] font-medium font-display text-[#2C3C28] p-[15px]">
                   Date
@@ -44,23 +50,29 @@ const OrderDetails = () => {
                   Actions
                 </h5>
               </div>
-              <div className="flex justify-between items-center">
-                <h5 className="text-[16px] font-normal font-display text-[#2C3C28] p-[15px]">
-                  #1357
-                </h5>
-                <h5 className="text-[16px] font-normal font-display text-[#2C3C28] p-[15px]">
-                  March 45, 2020
-                </h5>
-                <h5 className="text-[16px] font-normal font-display text-[#2C3C28] p-[15px]">
-                  Processing
-                </h5>
-                <h5 className="text-[16px] font-normal font-display text-[#2C3C28] p-[15px]">
-                  $364.00 for <span>5 items</span>
-                </h5>
-                <h5 className="text-[16px] hover:underline  font-normal font-display text-[#2C3C28] p-[15px]">
-                  <a href="#">View</a>
-                </h5>
-              </div>
+              {order.map((item, index) => (
+                <div
+                  index={index}
+                  className="flex gap-[140px] items-center"
+                >
+                  <h5 className="text-[16px] font-normal font-display text-[#2C3C28] p-[15px]">
+                    {item.uniqueOrderID}
+                  </h5>
+                  <h5 className="text-[16px] font-normal font-display text-[#2C3C28] p-[15px]">
+                    {format(new Date(item.createdAt), "MMMM d yyyy 'at' HH:mm")}
+                  </h5>
+                  <h5 className="text-[16px] font-normal font-display text-[#2C3C28] p-[15px]">
+                    {item.delivery}
+                  </h5>
+                  <h5 className="text-[16px] font-normal font-display text-[#2C3C28] p-[15px]">
+                    ${item.totalPrice} for
+                    <span>{item.cartitem.length} items</span>
+                  </h5>
+                  <h5 className="text-[16px] hover:underline  font-normal font-display text-[#2C3C28] p-[15px]">
+                    <a href="#">View</a>
+                  </h5>
+                </div>
+              ))}
             </div>
           </div>
         </Container>

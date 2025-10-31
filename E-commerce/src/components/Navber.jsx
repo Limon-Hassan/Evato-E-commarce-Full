@@ -56,7 +56,9 @@ const Navber = () => {
         const res = await api.get('product/product/search', {
           params: { query: value },
         });
+        console.log(res);
         const names = (res.data.products || []).map(p => p.name).slice(0, 8);
+        console.log(names);
         setSuggestions(names);
       } catch (err) {
         console.error('Search request failed:', err);
@@ -68,6 +70,7 @@ const Navber = () => {
     if (!socket) return;
 
     socket.on('searchResults', data => {
+      console.log(data);
       setSuggestions(data.products.map(p => p.name).slice(0, 8));
     });
 
