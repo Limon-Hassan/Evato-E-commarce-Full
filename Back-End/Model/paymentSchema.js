@@ -8,8 +8,7 @@ let PaymentSchema = new mongoose.Schema(
       require: true,
     },
     order: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Checkout',
+      type: String,
       required: true,
     },
     stripeId: { type: String, required: true },

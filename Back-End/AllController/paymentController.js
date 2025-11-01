@@ -7,7 +7,9 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 async function createPayment(req, res, next) {
   const { orderId } = req.body;
   try {
-    const order = await CheckoutSchema.findById(orderId).populate('user');
+    const order = await CheckoutSchema.findOne({
+      uniqueOrderID: orderId,
+    }).populate('user');
     if (!order) {
       return res.status(404).json({ msg: 'Order not found' });
     }
@@ -16,7 +18,7 @@ async function createPayment(req, res, next) {
     }
 
     let existingPayment = await paymentSchema.findOne({
-      order: order._id,
+      order: order.uniqueOrderID,
       status: 'pending',
     });
     if (existingPayment) {
@@ -27,7 +29,7 @@ async function createPayment(req, res, next) {
         msg: 'Payment already initiated',
         clientSecret: existingIntent.client_secret,
         paymentId: existingPayment._id,
-        orderId: order._id,
+        orderId: order.uniqueOrderID,
       });
     }
 
@@ -41,13 +43,13 @@ async function createPayment(req, res, next) {
       currency,
       automatic_payment_methods: { enabled: true },
       metadata: {
-        orderId: order._id.toString(),
+        orderId: order.uniqueOrderID,
         userId: order.user._id.toString(),
       },
     });
     const newPayment = await paymentSchema.create({
       user: order.user._id,
-      order: order._id,
+      order: order.uniqueOrderID,
       stripeId: paymentIntent.id,
       amount: order.totalPrice,
       currency,
@@ -57,14 +59,14 @@ async function createPayment(req, res, next) {
 
     getIO().to(order.user._id.toString()).emit('payment_initiated', {
       msg: 'Payment has been initiated. Waiting for confirmation...',
-      orderId: order._id,
+      orderId: order.uniqueOrderID,
     });
 
     return res.status(200).json({
       msg: 'Payment initiated!',
       clientSecret: paymentIntent.client_secret,
       paymentId: newPayment._id,
-      orderId: order._id,
+      orderId: order.uniqueOrderID,
       publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
     });
   } catch (error) {
@@ -92,10 +94,12 @@ async function capturePayment(req, res, next) {
       .populate('order');
 
     if (!payment) {
-      const order = await Checkout.findById(orderId).populate('user');
+      const order = await Checkout.findOne({ uniqueOrderID: orderId }).populate(
+        'user'
+      );
       payment = new paymentSchema({
         user: order.user._id,
-        order: order._id,
+        order: order.uniqueOrderID,
         stripeId: paymentIntent.id,
         amount: paymentIntent.amount / 100,
         currency: paymentIntent.currency,
@@ -111,7 +115,7 @@ async function capturePayment(req, res, next) {
     await payment.order.save();
 
     getIO().to(payment.user._id.toString()).emit('paymentSuccess', {
-      orderId: payment.order._id,
+      orderId: payment.order,
       amount: payment.amount,
     });
 

@@ -89,7 +89,7 @@ async function ReadCheckout(req, res, next) {
 
   try {
     if (action === 'single' && orderId) {
-      let singleOder = await CheckoutSchema.findOne({ _id: orderId })
+      let singleOder = await CheckoutSchema.findOne({ _id: orderId });
       return res
         .status(200)
         .json({ msg: 'single cart found !', data: singleOder });
