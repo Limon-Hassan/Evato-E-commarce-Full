@@ -12,7 +12,6 @@ router.post('/payment', ErrorCheck, authMidleware, createPayment);
 router.post(
   '/capture',
   ErrorCheck,
-  authMidleware,
   capturePayment
 );
 

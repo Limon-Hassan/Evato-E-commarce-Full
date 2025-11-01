@@ -111,11 +111,14 @@ async function capturePayment(req, res, next) {
       await payment.save();
     }
 
-    payment.order.paymentStatus = 'paid';
-    await payment.order.save();
+    await CheckoutSchema.findOneAndUpdate(
+      { uniqueOrderID: orderId },
+      { paymentStatus: 'paid' },
+      { new: true }
+    );
 
-    getIO().to(payment.user._id.toString()).emit('paymentSuccess', {
-      orderId: payment.order,
+    getIO().to(payment.user.toString()).emit('paymentSuccess', {
+      orderId,
       amount: payment.amount,
     });
 
