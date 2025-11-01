@@ -31,6 +31,15 @@ const Navber = () => {
         data.query.toLowerCase().includes(search.toLowerCase())
       ) {
         setSuggestions(data.suggestions || []);
+      } else if (data?.products) {
+        setSuggestions(
+          data.products
+            .map(p => ({
+              name: p.name,
+              photo: p.photo?.[0] || [],
+            }))
+            .slice(0, 8)
+        );
       }
     };
     socket.on('searchSuggestion', handler);
@@ -56,9 +65,12 @@ const Navber = () => {
         const res = await api.get('product/product/search', {
           params: { query: value },
         });
-        console.log(res);
-        const names = (res.data.products || []).map(p => p.name).slice(0, 8);
-        console.log(names);
+        const names = (res.data.products || [])
+          .map(p => ({
+            name: p.name,
+            photo: p.photo?.[0] || [],
+          }))
+          .slice(0, 8);
         setSuggestions(names);
       } catch (err) {
         console.error('Search request failed:', err);
@@ -71,7 +83,14 @@ const Navber = () => {
 
     socket.on('searchResults', data => {
       console.log(data);
-      setSuggestions(data.products.map(p => p.name).slice(0, 8));
+      setSuggestions(
+        data.products
+          .map(p => ({
+            name: p.name,
+            photo: p.photo?.[0] || [],
+          }))
+          .slice(0, 8)
+      );
     });
 
     socket.on('searchError', err => {
@@ -156,10 +175,17 @@ const Navber = () => {
                     {suggestions.map((s, i) => (
                       <li
                         key={i}
-                        className="px-3 py-2 hover:bg-gray-200 cursor-pointer"
-                        onClick={() => handleSuggestionClick(s)}
+                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-200 cursor-pointer"
+                        onClick={() => handleSuggestionClick(s.name)}
                       >
-                        {s}
+                        <img
+                          src={s.photo}
+                          alt={s.name}
+                          className="w-10 h-10 object-cover rounded"
+                        />
+                        <span className=" text-[16px] truncate mobile:w-[300px] tablet:w-[550px] laptop:w-[550px] computer:w-[550px]">
+                          {s.name}
+                        </span>
                       </li>
                     ))}
                   </ul>

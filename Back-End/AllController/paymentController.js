@@ -69,6 +69,10 @@ async function createPayment(req, res, next) {
     });
   } catch (error) {
     next(error);
+    console.log(error);
+    return res
+      .status(500)
+      .json({ msg: 'Internal server error', error: error.message });
   }
 }
 

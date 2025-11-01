@@ -98,11 +98,17 @@ const Shop = () => {
       let response = await api.get('product/GetProducts', {
         params: { id: id },
       });
-      navigate(`/productDetails/${id}`, { state: response.data });
+
+      window.location.href = `/productDetails/${id}/${response.data.product.name.replace(
+        /\s+/g,
+        '-'
+      )}`;
     } catch (error) {
       console.error(error);
     }
   };
+
+  
   return (
     <>
       <section>

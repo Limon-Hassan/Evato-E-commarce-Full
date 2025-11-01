@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Container from '../Container';
 import CheckBox from './CheckBox';
-import PaymentStripe from './paymentStripe';
+import PaymentStripe from './PaymentStripe';
 import api from '../Api/axios';
 import { useSnackbar } from 'notistack';
 
@@ -16,14 +16,10 @@ const Checkout = () => {
   let [city, setCity] = useState('');
   let [phone, setPhone] = useState('');
   let [summery, setSummeryData] = useState({});
+  let [orderID, setOrderID] = useState(null);
 
   const handlePaymentChange = paymentMethod => {
     setSelectpayment(paymentMethod);
-    if (paymentMethod === 'Payment by Stripe') {
-      setSelectpaymentStipe(true);
-    } else {
-      setSelectpaymentStipe(false);
-    }
   };
 
   useEffect(() => {
@@ -83,20 +79,26 @@ const Checkout = () => {
 
       let response = await api.post(`checkout/MakeCheckout/${id}`, payload);
       if (response) {
-        setCart([]);
-        setSummeryData({});
-        setName('');
-        setEmail('');
-        setAddress('');
-        setCity('');
-        setPhone('');
-        setSelectpayment(null);
-        localStorage.removeItem('cart');
-        window.dispatchEvent(new Event('storage'));
+        if (!Selectpayment === 'Payment by Stripe') {
+          setCart([]);
+          setSummeryData({});
+          setName('');
+          setEmail('');
+          setAddress('');
+          setCity('');
+          setPhone('');
+          localStorage.removeItem('cart');
+          window.dispatchEvent(new Event('storage'));
+        }
         let orderID = response.data.order.uniqueOrderID;
+        setOrderID(orderID);
         localStorage.setItem('orderID', orderID);
-        window.location.href = `/success/${orderID}`;
-        enqueueSnackbar('Order placed successfully!', { variant: 'success' });
+        if (Selectpayment === 'Payment by Stripe') {
+          setSelectpaymentStipe(true);
+        } else {
+          window.location.href = `/success/${orderID}`;
+          enqueueSnackbar('Order placed successfully!', { variant: 'success' });
+        }
       }
     } catch (error) {
       console.log(error);
@@ -318,7 +320,16 @@ const Checkout = () => {
               </div>
             </div>
           </div>
-          {SelectpaymentStipe && <PaymentStripe></PaymentStripe>}
+          {SelectpaymentStipe === true ? (
+            <PaymentStripe
+              orderId={orderID}
+              amount={summery.totalPrice * 100}
+              onSuccess={() => {
+                localStorage.removeItem('cart');
+                window.location.href = '/success';
+              }}
+            ></PaymentStripe>
+          ) : null}
         </Container>
       </section>
     </>

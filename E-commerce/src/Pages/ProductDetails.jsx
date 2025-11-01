@@ -91,8 +91,19 @@ const ProductDetails = () => {
     }
   };
 
-  const handleProductItem = productId => {
-    navigate(`/productDetails/${productId}`);
+  let handleProductItem = async id => {
+    try {
+      let response = await api.get('product/GetProducts', {
+        params: { id: id },
+      });
+
+      window.location.href = `/productDetails/${id}/${response.data.product.name.replace(
+        /\s+/g,
+        '-'
+      )}`;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   let HandleActive = type => {
