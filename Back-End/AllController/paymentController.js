@@ -83,7 +83,7 @@ async function capturePayment(req, res, next) {
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
-    if (paymentIntent.status !== 'paid') {
+    if (paymentIntent.status !== 'succeeded') {
       return res.status(400).json({ msg: 'Payment not completed yet' });
     }
 
@@ -103,11 +103,11 @@ async function capturePayment(req, res, next) {
         stripeId: paymentIntent.id,
         amount: paymentIntent.amount / 100,
         currency: paymentIntent.currency,
-        status: 'paid',
+        status: 'succeeded',
       });
       await payment.save();
     } else {
-      payment.status = 'paid';
+      payment.status = 'succeeded';
       await payment.save();
     }
 
