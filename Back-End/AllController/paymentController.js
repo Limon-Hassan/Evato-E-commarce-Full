@@ -94,9 +94,9 @@ async function capturePayment(req, res, next) {
       .populate('order');
 
     if (!payment) {
-      const order = await Checkout.findOne({ uniqueOrderID: orderId }).populate(
-        'user'
-      );
+      const order = await CheckoutSchema.findOne({
+        uniqueOrderID: orderId,
+      }).populate('user');
       payment = new paymentSchema({
         user: order.user._id,
         order: order.uniqueOrderID,

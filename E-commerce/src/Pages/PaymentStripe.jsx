@@ -4,8 +4,6 @@ import { useSnackbar } from 'notistack';
 import api from '../Api/axios';
 
 const PaymentStripe = ({ orderId, amount, onSuccess }) => {
-  console.log(orderId, amount, onSuccess);
-
   const stripe = useStripe();
   const elements = useElements();
   const { enqueueSnackbar } = useSnackbar();
@@ -29,7 +27,7 @@ const PaymentStripe = ({ orderId, amount, onSuccess }) => {
       const { data } = await api.post('payments/payment', { orderId });
 
       const { clientSecret, paymentId, orderId: returnedOrderId } = data;
-
+      console.log(data);
       const cardElement = elements.getElement(CardElement);
       const { error, paymentIntent } = await stripe.confirmCardPayment(
         clientSecret,
