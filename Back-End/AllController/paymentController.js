@@ -125,7 +125,10 @@ async function capturePayment(req, res, next) {
     });
   } catch (error) {
     next(error);
-    return res.status(500).json({ msg: 'server error', error: error.message });
+    console.log(error);
+    return res
+      .status(500)
+      .json({ msg: 'Internal server error', error: error.message });
   }
 }
 

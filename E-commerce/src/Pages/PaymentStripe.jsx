@@ -44,6 +44,7 @@ const PaymentStripe = ({ orderId, amount, onSuccess }) => {
       );
 
       if (error) {
+        console.log(error);
         enqueueSnackbar(error.message, { variant: 'error' });
         setLoading(false);
         return;
@@ -86,7 +87,12 @@ const PaymentStripe = ({ orderId, amount, onSuccess }) => {
       />
 
       <div className="border-2 border-[#e8e8e8] p-3 rounded mb-4">
-        <CardElement options={{ style: { base: { fontSize: '16px' } } }} />
+        <CardElement
+          options={{
+            style: { base: { fontSize: '16px' } },
+            hidePostalCode: true,
+          }}
+        />
       </div>
 
       <button
