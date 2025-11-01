@@ -13,7 +13,6 @@ router.post(
   '/capture',
   ErrorCheck,
   authMidleware,
-  AdminMidleware,
   capturePayment
 );
 
