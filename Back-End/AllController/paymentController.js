@@ -23,7 +23,7 @@ async function createPayment(req, res, next) {
     });
     if (existingPayment) {
       const existingIntent = await stripe.paymentIntents.retrieve(
-        existingPayment.stripeId
+        existingPayment.stripeId,
       );
       return res.status(200).json({
         msg: 'Payment already initiated',
@@ -87,6 +87,10 @@ async function capturePayment(req, res, next) {
       return res.status(400).json({ msg: 'Payment not completed yet' });
     }
 
+    if (paymentIntent.metadata.orderId !== orderId) {
+      return res.status(400).json({ msg: 'Order mismatch' });
+    }
+
     let payment = await paymentSchema
       .findOne({
         stripeId: paymentIntent.id,
@@ -114,7 +118,7 @@ async function capturePayment(req, res, next) {
     await CheckoutSchema.findOneAndUpdate(
       { uniqueOrderID: orderId },
       { paymentStatus: 'paid' },
-      { new: true }
+      { new: true },
     );
 
     getIO().to(payment.user.toString()).emit('paymentSuccess', {
@@ -135,4 +139,51 @@ async function capturePayment(req, res, next) {
   }
 }
 
-module.exports = { createPayment, capturePayment };
+async function handleWebhook(req, res) {
+  const sig = req.headers['stripe-signature'];
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET,
+    );
+  } catch (err) {
+    console.log('Webhook signature error:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'payment_intent.succeeded') {
+    const paymentIntent = event.data.object;
+    const orderId = paymentIntent.metadata.orderId;
+
+    const payment = await paymentSchema.findOne({ stripeId: paymentIntent.id });
+    if (payment && payment.status !== 'succeeded') {
+      payment.status = 'succeeded';
+      await payment.save();
+
+      await CheckoutSchema.findOneAndUpdate(
+        { uniqueOrderID: orderId },
+        { paymentStatus: 'paid' },
+      );
+
+      getIO().to(payment.user.toString()).emit('paymentSuccess', {
+        orderId,
+        amount: payment.amount,
+      });
+    }
+  }
+
+  if (event.type === 'payment_intent.payment_failed') {
+    const paymentIntent = event.data.object;
+    await paymentSchema.findOneAndUpdate(
+      { stripeId: paymentIntent.id },
+      { status: 'failed' },
+    );
+  }
+
+  res.json({ received: true });
+}
+
+module.exports = { createPayment, capturePayment, handleWebhook };
