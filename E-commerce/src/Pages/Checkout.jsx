@@ -6,6 +6,11 @@ import api from '../Api/axios';
 import { useSnackbar } from 'notistack';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+
 const Checkout = () => {
   let navigate = useNavigate();
   let location = useLocation();
@@ -271,7 +276,7 @@ const Checkout = () => {
                         </p>
                       </div>
                       <div class="flex items-center justify-between">
-                        <p class="text-gray-400">Shipping</p>
+                        <p class="text-gray-400">Discount</p>
                         <p class="text-lg font-semibold text-gray-900">
                           ${summery.discount}
                         </p>
@@ -329,24 +334,26 @@ const Checkout = () => {
             </div>
           </div>
           {SelectpaymentStipe === true ? (
-            <PaymentStripe
-              orderId={orderID}
-              amount={summery.totalPrice * 100}
-              onSuccess={() => {
-                setCart([]);
-                setSummeryData({});
-                setName('');
-                setEmail('');
-                setAddress('');
-                setCity('');
-                setPhone('');
-                localStorage.removeItem('cart');
-                window.dispatchEvent(new Event('storage'));
-                setTimeout(() => {
-                  window.location.href = `/success/${orderID}`;
-                }, 3000);
-              }}
-            ></PaymentStripe>
+            <Elements stripe={stripePromise}>
+              <PaymentStripe
+                orderId={orderID}
+                amount={summery.totalPrice * 100}
+                onSuccess={() => {
+                  setCart([]);
+                  setSummeryData({});
+                  setName('');
+                  setEmail('');
+                  setAddress('');
+                  setCity('');
+                  setPhone('');
+                  localStorage.removeItem('cart');
+                  window.dispatchEvent(new Event('storage'));
+                  setTimeout(() => {
+                    window.location.href = `/success/${orderID}`;
+                  }, 3000);
+                }}
+              />
+            </Elements>
           ) : null}
         </Container>
       </section>
