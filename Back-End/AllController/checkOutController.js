@@ -28,7 +28,7 @@ async function checkout(req, res, next) {
     Cartitems.forEach(item => {
       let productPrice = item.product ? item.product.price : 0;
       let quantity = item.quantity || 1;
-      let Fees = item.additionalFees || 100;
+      let Fees = item.additionalFees || 0;
       OrginalPrice += productPrice;
       totalQuantity += quantity;
       additionalFees += Fees;
@@ -38,7 +38,7 @@ async function checkout(req, res, next) {
       subTotal += item.product.price * item.quantity;
     });
     let discount = totalQuantity > 5 || subTotal >= 5000 ? subTotal * 0.05 : 0;
-    let shippingCost = subTotal >= 5000 ? 0 : 200;
+    let shippingCost = subTotal >= 5000 ? 0 : 0;
     let totalPrice = subTotal + additionalFees + shippingCost - discount;
     let items = Cartitems.map(items => ({
       product: items.product,

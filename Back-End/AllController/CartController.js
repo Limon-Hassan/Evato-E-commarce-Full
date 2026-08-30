@@ -19,10 +19,10 @@ async function CreateCart(req, res, next) {
     }
 
     const qty = 1;
-    const additionalFees = 100;
+    const additionalFees = 0;
     const originalPrice = productExist.price;
     const subtotal = originalPrice * qty;
-    const shippingCost = subtotal >= 5000 ? 0 : 200;
+    const shippingCost = subtotal >= 5000 ? 0 : 0;
     const discount = qty > 5 || subtotal >= 5000 ? subtotal * 0.05 : 0;
     const totalPrice = subtotal + additionalFees + shippingCost - discount;
 
@@ -83,7 +83,7 @@ async function CartSummery(req, res, next) {
     let originalPrice = 0;
     let subTotal = 0;
     let totalQuantity = 0;
-    const additionalFees = 100;
+    const additionalFees = 0;
     thisCartItem.forEach(item => {
       let productprice = item.product ? item.product.price : 0;
       let quantity = item.quantity || 0;
@@ -92,7 +92,7 @@ async function CartSummery(req, res, next) {
       totalQuantity += quantity;
     });
 
-    let shippingCost = subTotal >= 5000 ? 0 : 200;
+    let shippingCost = subTotal >= 5000 ? 0 : 0;
     let discount = totalQuantity > 5 || subTotal >= 5000 ? subTotal * 0.05 : 0;
     let totalPrice = subTotal + additionalFees + shippingCost - discount;
     let Cartsummery = {
@@ -145,10 +145,10 @@ async function IncreamentCart(req, res, next) {
     }
     let productPrice = cartItem.product ? cartItem.product.price : 0;
     let quantity = cartItem.quantity || 1;
-    let additionalFees = cartItem.additionalFees || 100;
+    let additionalFees = cartItem.additionalFees || 0;
     let originalprice = productPrice;
     let subtotal = productPrice * cartItem.quantity;
-    let shippingCost = subtotal >= 5000 ? 0 : 200;
+    let shippingCost = subtotal >= 5000 ? 0 : 0;
     let discount = quantity > 10 || subtotal >= 5000 ? subtotal * 0.05 : 0;
     let totalprice = subtotal + shippingCost + additionalFees - discount;
     if (!isNaN(originalprice) && !isNaN(totalprice)) {
@@ -184,14 +184,14 @@ async function IncreamentCart(req, res, next) {
 
     let totalSubtotal = 0;
     let totalQuantity = 0;
-    const fixedFee = 100;
+    const fixedFee = 0;
 
     allCartItems.forEach(item => {
       totalSubtotal += item.product.price * item.quantity;
       totalQuantity += item.quantity;
     });
 
-    const totalShippingCost = totalSubtotal >= 5000 ? 0 : 200;
+    const totalShippingCost = totalSubtotal >= 5000 ? 0 : 0;
     const totalDiscount =
       totalQuantity > 10 || totalSubtotal >= 5000 ? totalSubtotal * 0.05 : 0;
     const finalTotal =
